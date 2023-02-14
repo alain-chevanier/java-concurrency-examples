@@ -23,7 +23,7 @@ public class MultiThreadedMatrixMap extends MultiThreadedOperation implements Ma
       int threadId = i;
       threadList.add(new Thread(() -> taskMap(threadId, function, matrix, result)));
     }
-    this.runAndWaitForThreads(threadList);
+    this.waitThreads(threadList);
     return result;
   }
 

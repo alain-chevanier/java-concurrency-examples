@@ -38,18 +38,18 @@ public class MatrixFindMinimumTest {
   }
 
   @Test
-  void findMinimumBigMatrix() throws Exception {
-    matrixFindMinimum = new MultiThreadedMatrixFindMinimum();
-    int rows = 5000, columns = 10000;
-    Matrix<Float> matrix = new Matrix<>(rows, columns);
-    float minimum = MatrixUtilsTestHelper.fillMatrixAndReturnMinimumValue(matrix);
-    assertEquals(minimum, matrixFindMinimum.findMinimum(matrix));
+  void findMinimumBigMatrixSequential() throws Exception {
+    executeBigMatrixTest(1, 15000, 10000);
   }
 
   @Test
-  void findMinimumConcurrentBigMatrix() throws Exception {
-    matrixFindMinimum = new MultiThreadedMatrixFindMinimum(4);
-    int rows = 5000, columns = 10000;
+  void findMinimumBigMatrixMultiThreaded() throws Exception {
+    executeBigMatrixTest(Runtime.getRuntime().availableProcessors(), 15000, 10000);
+  }
+
+  private void executeBigMatrixTest(int threads, int rows, int columns)
+      throws InterruptedException {
+    MatrixFindMinimum matrixFindMinimum = new MultiThreadedMatrixFindMinimum(threads);
     Matrix<Float> matrix = new Matrix<>(rows, columns);
     float minimum = MatrixUtilsTestHelper.fillMatrixAndReturnMinimumValue(matrix);
     assertEquals(minimum, matrixFindMinimum.findMinimum(matrix));

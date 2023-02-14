@@ -13,8 +13,11 @@ public class MultiThreadedOperation {
     this.threads = threads;
   }
 
-  protected void runAndWaitForThreads(List<Thread> threads) throws InterruptedException {
+  protected void runThreads(List<Thread> threads) throws InterruptedException {
     threads.forEach(Thread::start);
+  }
+
+  protected void waitThreads(List<Thread> threads) throws InterruptedException {
     for (Thread t : threads) {
       t.join();
     }
