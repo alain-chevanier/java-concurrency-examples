@@ -16,7 +16,7 @@
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <junit.jupiter.version>5.7.2</junit.jupiter.version>
     <lombok.version>1.18.26</lombok.version>
-    <git-code-format-maven-plugin.version>2.0</git-code-format-maven-plugin.version>
+    <git-code-format-maven-plugin.version>4.2</git-code-format-maven-plugin.version>
     <exec.mainClass>unam.ciencias.computoconcurrente.threadobjects.App</exec.mainClass>
   </properties>
 
