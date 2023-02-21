@@ -1,10 +1,15 @@
 package unam.ciencias.computoconcurrente.synchronization;
 
 public class App {
-  static SynchronizedCounter counter;
+  static Counter counter;
+  static SynchronizedCounter synchronizedCounter;
 
   public static void main(String[] a) throws InterruptedException {
-    counter = new SynchronizedCounter();
+    synchronizedCounterExample();
+  }
+
+  static void synchronizedCounterExample() throws InterruptedException {
+    synchronizedCounter = new SynchronizedCounter();
     Long currentTimestamp = System.currentTimeMillis();
     Thread t1 = new Thread(() -> incrementCounterALotOfTimes(10000000, currentTimestamp + 3000));
     Thread t2 = new Thread(() -> incrementCounterALotOfTimes(10000000, currentTimestamp + 3000));
@@ -19,14 +24,14 @@ public class App {
     t1.join();
     t2.join();
 
-    System.out.println("Main thread current counter last value: " + counter.value());
+    System.out.println("Main thread current counter last value: " + synchronizedCounter.value());
   }
 
   static void incrementCounterALotOfTimes(int times, long startTimestamp) {
     // Magia negra: Estoy forzando a que ambos hilos inicies su ejecución al mismo tiempo
     try {
-      Long currentTimestamp = System.currentTimeMillis();
-      Long wakeUpTimestamp = startTimestamp - currentTimestamp;
+      long currentTimestamp = System.currentTimeMillis();
+      long wakeUpTimestamp = startTimestamp - currentTimestamp;
       if (wakeUpTimestamp > 0) {
         Thread.sleep(wakeUpTimestamp);
       }
@@ -35,7 +40,7 @@ public class App {
     }
 
     for (int i = 0; i < times; i++) {
-      counter.increment();
+      synchronizedCounter.increment();
     }
   }
 
@@ -51,7 +56,7 @@ public class App {
   }
 
   static void exampleHappensBeforeStartAndJoin() throws InterruptedException {
-    counter = new SynchronizedCounter();
+    counter = new Counter();
     Thread t = new Thread(() -> incrementCounterALotOfTimes());
     counter.increment();
     counter.increment();
@@ -59,10 +64,10 @@ public class App {
     t.start();
     for (int j = 0; j < 10; j++) {
       Thread.sleep(1000);
-      System.out.println("Main thread current counter value: " + counter.value());
+      System.out.println("Main thread current counter value: " + synchronizedCounter.value());
     }
     t.join();
-    System.out.println("Main thread current counter last value: " + counter.value());
+    System.out.println("Main thread current counter last value: " + synchronizedCounter.value());
   }
 
   static void incrementCounterALotOfTimes() {
