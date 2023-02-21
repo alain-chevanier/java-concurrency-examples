@@ -1,4 +1,4 @@
-package unam.ciencias.computoconcurrente;
+package unam.ciencias.computoconcurrente.threadobjects;
 
 import java.util.function.Function;
 

@@ -1,4 +1,4 @@
-package unam.ciencias.computoconcurrente;
+package unam.ciencias.computoconcurrente.threadobjects;
 
 public class App {
 
@@ -9,12 +9,14 @@ public class App {
     Thread inheritThread = new HelloThread();
     inheritThread.start();
 
-    Thread anonymousClassThread = new Thread(new Runnable() {
-      @Override
-      public void run() {
-        System.out.println("Hello from anonymous class");
-      }
-    });
+    Thread anonymousClassThread =
+        new Thread(
+            new Runnable() {
+              @Override
+              public void run() {
+                System.out.println("Hello from anonymous class");
+              }
+            });
     anonymousClassThread.start();
 
     Thread lambdaThread = new Thread(App::sleepingRoutine);
@@ -28,26 +30,20 @@ public class App {
 
   static void sleepingRoutine() {
     String importantInfo[] = {
-            "Mares eat oats",
-            "Does eat oats",
-            "Little lambs eat ivy",
-            "A kid will eat ivy too"
+      "Mares eat oats", "Does eat oats", "Little lambs eat ivy", "A kid will eat ivy too"
     };
 
-    for (int i = 0;
-         i < importantInfo.length;
-         i++) {
-      //Pause for 4 seconds
+    for (int i = 0; i < importantInfo.length; i++) {
+      // Pause for 4 seconds
       try {
         Thread.sleep(4000);
       } catch (InterruptedException e) {
         throw new RuntimeException(e);
       }
-      //Print a message
+      // Print a message
       System.out.println("CHILD THREAD: " + importantInfo[i]);
     }
   }
-
 }
 
 class HelloRunnable implements Runnable {

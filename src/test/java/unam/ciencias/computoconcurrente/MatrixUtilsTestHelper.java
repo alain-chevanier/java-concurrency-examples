@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Arrays;
 import java.util.Random;
+import unam.ciencias.computoconcurrente.threadobjects.Matrix;
 
 public class MatrixUtilsTestHelper {
   static Float fillMatrixAndReturnMinimumValue(Matrix<Float> result) {
@@ -19,15 +20,15 @@ public class MatrixUtilsTestHelper {
     return min;
   }
 
-   public void escribe(String ruta, int[][] matriz) throws IOException {
-     try (Writer writer = new FileWriter(ruta)) {
-       writer.write(matriz.length + "," + matriz[0].length + "\n");
-       for (int[] fila : matriz) {
-         String linea = Arrays.toString(fila);
-         writer.write(linea.substring(1, linea.length() - 1).replaceAll(" ", "") + "\n");
-       }
-     } catch (IOException ioe) {
-       throw new RuntimeException(ioe);
-     }
-   }
+  public void escribe(String ruta, int[][] matriz) throws IOException {
+    try (Writer writer = new FileWriter(ruta)) {
+      writer.write(matriz.length + "," + matriz[0].length + "\n");
+      for (int[] fila : matriz) {
+        String linea = Arrays.toString(fila);
+        writer.write(linea.substring(1, linea.length() - 1).replaceAll(" ", "") + "\n");
+      }
+    } catch (IOException ioe) {
+      throw new RuntimeException(ioe);
+    }
+  }
 }

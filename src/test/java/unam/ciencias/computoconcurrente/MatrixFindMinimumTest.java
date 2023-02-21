@@ -3,6 +3,9 @@ package unam.ciencias.computoconcurrente;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
+import unam.ciencias.computoconcurrente.threadobjects.Matrix;
+import unam.ciencias.computoconcurrente.threadobjects.MatrixFindMinimum;
+import unam.ciencias.computoconcurrente.threadobjects.MultiThreadedMatrixFindMinimum;
 
 public class MatrixFindMinimumTest {
   MatrixFindMinimum matrixFindMinimum;

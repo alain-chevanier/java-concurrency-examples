@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.function.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import unam.ciencias.computoconcurrente.threadobjects.Matrix;
 
 public class MatrixParser<T> {
 
