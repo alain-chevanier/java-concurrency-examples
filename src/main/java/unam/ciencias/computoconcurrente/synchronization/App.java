@@ -2,14 +2,14 @@ package unam.ciencias.computoconcurrente.synchronization;
 
 public class App {
   static Counter counter;
-  static SynchronizedCounter synchronizedCounter;
+  static Counter synchronizedCounter;
 
   public static void main(String[] a) throws InterruptedException {
     synchronizedCounterExample();
   }
 
   static void synchronizedCounterExample() throws InterruptedException {
-    synchronizedCounter = new SynchronizedCounter();
+    synchronizedCounter = new Counter();
     Long currentTimestamp = System.currentTimeMillis();
     Thread t1 = new Thread(() -> incrementCounterALotOfTimes(10000000, currentTimestamp + 3000));
     Thread t2 = new Thread(() -> incrementCounterALotOfTimes(10000000, currentTimestamp + 3000));

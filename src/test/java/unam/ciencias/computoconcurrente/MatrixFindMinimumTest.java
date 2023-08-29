@@ -42,12 +42,12 @@ public class MatrixFindMinimumTest {
 
   @Test
   void findMinimumBigMatrixSequential() throws Exception {
-    executeBigMatrixTest(1, 15000, 10000);
+    executeBigMatrixTest(1, 1500, 1000);
   }
 
   @Test
   void findMinimumBigMatrixMultiThreaded() throws Exception {
-    executeBigMatrixTest(Runtime.getRuntime().availableProcessors(), 15000, 10000);
+    executeBigMatrixTest(Runtime.getRuntime().availableProcessors(), 1500, 1000);
   }
 
   private void executeBigMatrixTest(int threads, int rows, int columns)

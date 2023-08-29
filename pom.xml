@@ -16,6 +16,8 @@
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <junit.jupiter.version>5.7.2</junit.jupiter.version>
     <lombok.version>1.18.26</lombok.version>
+    <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/report/jacoco-ut/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+    <sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
     <git-code-format-maven-plugin.version>4.2</git-code-format-maven-plugin.version>
     <exec.mainClass>unam.ciencias.computoconcurrente.threadobjects.App</exec.mainClass>
   </properties>
@@ -120,12 +122,18 @@
           </execution>
         </executions>
         <configuration>
-          <googleJavaFormatOptions>
-            <aosp>false</aosp>
-            <fixImportsOnly>false</fixImportsOnly>
-            <skipSortingImports>false</skipSortingImports>
-            <skipRemovingUnusedImports>false</skipRemovingUnusedImports>
-          </googleJavaFormatOptions>
+          <formatterOptions>
+            <!-- Use AOSP style instead of Google Style (4-space indentation). -->
+            <googleJavaFormat.aosp>false</googleJavaFormat.aosp>
+            <!-- Format the javadoc -->
+            <googleJavaFormat.formatJavadoc>true</googleJavaFormat.formatJavadoc>
+            <!-- Fix import order and remove any unused imports, but do no other formatting. -->
+            <googleJavaFormat.fixImportsOnly>false</googleJavaFormat.fixImportsOnly>
+            <!-- Do not fix the import order. Unused imports will still be removed. -->
+            <googleJavaFormat.skipSortingImports>false</googleJavaFormat.skipSortingImports>
+            <!-- Do not remove unused imports. Imports will still be sorted. -->
+            <googleJavaFormat.skipRemovingUnusedImports>false</googleJavaFormat.skipRemovingUnusedImports>
+          </formatterOptions>
         </configuration>
       </plugin>
 
