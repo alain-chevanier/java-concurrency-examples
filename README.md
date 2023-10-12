@@ -54,8 +54,17 @@ También agrega el plugin de IntelliJ [SonarLint](https://www.sonarsource.com/pr
 
 ## Agenda
 
+En el paquete `unam.ciencias.computoconcurrente.threadobjects` tenemos ejemplos de los siguientes temas:
 * Hilos en Java
 * Interrumpir hilos
 * Bloquear hilos
+
+En el paquete `unam.ciencias.computoconcurrente.synchronization` tenemos ejemplos de cómo resolver el problema de la 
+sección crítica nativamente en java.
+* synchronized - intrinsic lock - reentrant lock
+* regular lock
+
+En el paquete `unam.ciencias.computoconcurrente.soexamples` tenemos ejemplos relacionados con los slides del capítulo
+de _Process Synchronization_ del libro de operating system concepts de Silberschatz.
 
 
