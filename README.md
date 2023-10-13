@@ -67,4 +67,13 @@ sección crítica nativamente en java.
 En el paquete `unam.ciencias.computoconcurrente.soexamples` tenemos ejemplos relacionados con los slides del capítulo
 de _Process Synchronization_ del libro de operating system concepts de Silberschatz.
 
-
+En el paquete `unam.ciencias.computoconcurrente.blockingsynchronization` tenemos ejemplos de relacionados
+al capítulo 08 "Monitors and Blocking Synchronization" del libro de 
+Maurice Herlihy "The Art of Multiprocessor Programming".
+* Interfaz `BoundedBuffer`, implementaciones:
+  - `ExplicitLockAndConditionsBoundedBuffer`
+  - `MonitorBoundedBuffer`
+* Interfaz `ReadWriteLock`, implementaciones:
+  - `SimpleReadWriteLock`
+  - `WritersWithPreferenceReadWriteLock` (en el libro viene como FIFOReadWriteLock)
+  
