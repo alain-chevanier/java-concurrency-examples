@@ -3,7 +3,7 @@ package unam.ciencias.computoconcurrente.soexamples;
 /**
  * En esta clase tenemos un ejemplo de cómo sucede una condición de carrera.
  */
-public class RaceConditionExample {
+public class RaceConditionSolution {
 
   // variable global que comparten todos los hilos
   static volatile int counter = 0;
@@ -34,18 +34,28 @@ public class RaceConditionExample {
   }
 
   static void doWork() {
-    // Critical Section Begin
-    for (int i = 0; i < 10000; i++) {
-      counter++;
+    lock.lock();
+    try {
+      // Critical Section Begin
+      for (int i = 0; i < 10000; i++) {
+        counter++;
+      }
+      // Critical Section End
+    } finally {
+      lock.unlock();
     }
-    // Critical Section End
   }
 
   static void undoWork() {
-    // Critical Section Begin
-    for (int i = 0; i < 10000; i++) {
-      counter--;
+    lock.lock();
+    try {
+      // Critical Section Begin
+      for (int i = 0; i < 10000; i++) {
+        counter--;
+      }
+      // Critical Section End
+    } finally {
+      lock.unlock();
     }
-    // Critical Section End
   }
 }
