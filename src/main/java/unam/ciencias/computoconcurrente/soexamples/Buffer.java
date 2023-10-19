@@ -6,7 +6,7 @@ public interface Buffer<T> {
    *
    * @return size
    */
-  int size();
+  int capacity();
 
   /**
    * Agrega un elemento al buffer se bloquea si esta lleno
@@ -28,4 +28,12 @@ public interface Buffer<T> {
    * @return contedoDeObjetos
    */
   int elements();
+
+  default boolean isFull() {
+    return this.capacity() == this.elements();
+  }
+
+  default boolean isEmpty() {
+    return 0 == this.elements();
+  }
 }

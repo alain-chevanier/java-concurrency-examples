@@ -1,54 +1,97 @@
 package unam.ciencias.computoconcurrente.soexamples;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class ProducerConsumerBounderBufferMain {
-  static Buffer<Integer> buffer = new ProducerConsumerBoundedBuffer(100);
-  static final int VALUES_TO_PRODUCE = 100;
+  static Buffer<Integer> buffer = new ProducerConsumerBoundedBuffer<>(100);
+  static final int VALUES_TO_BE_CONSUMED = 1000;
 
-  static List<Integer> producedElements = new ArrayList<>(VALUES_TO_PRODUCE);
-  static List<Integer> consumedElements = new ArrayList<>(VALUES_TO_PRODUCE);
+  static Map<Integer, List<Integer>> producedElements = new Hashtable<>();
+  static Map<Integer,List<Integer>> consumedElements = new Hashtable<>();
 
+  static final int TIMEOUT_MS = 4000;
+
+  static final int PRODUCERS = 2;
+  static final int CONSUMERS = 2;
+
+  static List<Thread> producersThreads = new ArrayList<>(PRODUCERS);
+  static List<Thread> consumersThreads = new ArrayList<>(CONSUMERS);
+  static List<Thread> allThreads = new ArrayList<>(PRODUCERS + CONSUMERS);
 
   public static void main(String[] args) throws InterruptedException {
-    Thread producer = new Thread(() -> produceElements(), "Producer");
-    Thread consumer = new Thread(() -> consumeElements(), "Consumer");
+    for (int i = 0; i < PRODUCERS; i++) {
+      int elems = VALUES_TO_BE_CONSUMED * CONSUMERS / PRODUCERS;
+      if (i == 0) {
+        elems += (VALUES_TO_BE_CONSUMED * CONSUMERS) % PRODUCERS;
+      }
+      final int elementsToProduce = elems;
+      Thread producer = new Thread(() -> produceElements(elementsToProduce), "Producer" + (i+1));
+      producersThreads.add(producer);
+      allThreads.add(producer);
+    }
 
-    producer.start();
-    consumer.start();
+    for (int i = 0; i < CONSUMERS; i++) {
+      Thread consumer = new Thread(() -> consumeElements(), "Consumer" + (i+1));
+      consumersThreads.add(consumer);
+      allThreads.add(consumer);
+    }
 
-    producer.join();
-    consumer.join();
+    for (var thread : allThreads) {
+      thread.start();
+    }
 
-    System.out.println("produced and consumed elements are the same? "
-      + producedElements.equals(consumedElements));
+    int waits = 0;
+    while(allThreads.stream().anyMatch(Thread::isAlive) && waits < (CONSUMERS + PRODUCERS)) {
+      Thread.sleep(TIMEOUT_MS);
+      waits++;
+    }
 
-    for (int i = 0; i < VALUES_TO_PRODUCE; i++) {
-      if (!producedElements.get(i).equals(consumedElements.get(i))) {
-        System.out.println("elements at position " + i + " are different. "
-        + "producedElem: "+ producedElements.get(i)
-          + ", consumedElem: " + consumedElements.get(i));
+    for (var thread : allThreads) {
+      if (thread.isAlive()) {
+        thread.interrupt();
       }
     }
+
+    List<Integer> allProducedElems = new ArrayList<>();
+    for (var pair : producedElements.entrySet()) {
+      allProducedElems.addAll(pair.getValue());
+    }
+
+    List<Integer> allConsumedElems = new ArrayList<>();
+    for (var pair : consumedElements.entrySet()) {
+      allConsumedElems.addAll(pair.getValue());
+    }
+
+    System.out.println("the same amount of elements was produced and consumed? "
+      + (allProducedElems.size() == allConsumedElems.size()));
+
+    System.out.println("Produced elems: " + allProducedElems.size()
+      + ". Consumed elems: " + allConsumedElems.size());
+
+    allProducedElems.sort(Integer::compareTo);
+    allConsumedElems.sort(Integer::compareTo);
+
+    System.out.println("produced and consumed elements are the same? "
+      + (allProducedElems.equals(allConsumedElems)));
   }
 
-  static void produceElements() {
+  static void produceElements(int elementsToProduce) {
     try {
-      produceElementsAux();
+      produceElementsAux(elementsToProduce);
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
     }
   }
 
-  static void produceElementsAux() throws InterruptedException {
-
-    for (int i = 0; i < VALUES_TO_PRODUCE; i++) {
+  static void produceElementsAux(int elementsToProduce) throws InterruptedException {
+    List<Integer> producedElems = new ArrayList<>();
+    producedElements.put(ThreadID.get(), producedElems);
+    for (int i = 0; i < elementsToProduce; i++) {
       Integer elem = ThreadLocalRandom.current().nextInt();
       buffer.put(elem);
       // sleep some random time before producing next element
-      producedElements.add(elem);
+      producedElems.add(elem);
       sleepRandomTime();
     }
     System.out.println(Thread.currentThread().getName() + " is done. ");
@@ -63,9 +106,11 @@ public class ProducerConsumerBounderBufferMain {
   }
 
   static void consumeElementsAux() throws InterruptedException {
-    for (int i = 0; i < VALUES_TO_PRODUCE; i++) {
+    List<Integer> consumedElems = new ArrayList<>();
+    consumedElements.put(ThreadID.get(), consumedElems);
+    for (int i = 0; i < VALUES_TO_BE_CONSUMED; i++) {
       Integer elem = buffer.take();
-      consumedElements.add(elem);
+      consumedElems.add(elem);
       // sleep some random time before consuming next element
       sleepRandomTime();
     }
