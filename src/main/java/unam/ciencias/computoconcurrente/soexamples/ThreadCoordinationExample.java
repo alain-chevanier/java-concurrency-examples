@@ -4,6 +4,7 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class ThreadCoordinationExample {
+  // counts the numbers of produced elements
   static Semaphore synch = new Semaphore(0);
   static final int VALUES_TO_PRODUCE = 1000;
   static int[] values = new int[VALUES_TO_PRODUCE];
@@ -19,12 +20,15 @@ public class ThreadCoordinationExample {
     consumer.join();
 
     System.out.print("Actual produced odd numbers count: ");
+    synch.release(VALUES_TO_PRODUCE);
     countOddNumbers();
   }
 
   static void produceValues() {
     for (int i = 0; i < VALUES_TO_PRODUCE; i++) {
       values[i] = ThreadLocalRandom.current().nextInt();
+      // notify there's a new element that can be consumed
+      synch.release();
       // sleep some random time before next elem is produced
       sleepRandomTime();
     }
@@ -41,7 +45,10 @@ public class ThreadCoordinationExample {
 
   static void countOddNumbersAux() throws InterruptedException {
     int oddNumCount = 0;
-    for (int value : values) {
+    for (int i = 0; i < values.length; i++) {
+      // wait till there's an element tu consume
+      synch.acquire();
+      int value = values[i];
       oddNumCount += value % 2 == 1 ? 1 : 0;
       // sleep some random time before analysing next element
       sleepRandomTime();

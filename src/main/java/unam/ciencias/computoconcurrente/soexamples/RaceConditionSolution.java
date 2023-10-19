@@ -1,5 +1,7 @@
 package unam.ciencias.computoconcurrente.soexamples;
 
+import java.util.concurrent.Semaphore;
+
 /**
  * En esta clase tenemos un ejemplo de cómo sucede una condición de carrera.
  */
@@ -8,7 +10,10 @@ public class RaceConditionSolution {
   // variable global que comparten todos los hilos
   static volatile int counter = 0;
 
-  static final Lock lock = new PetersonLock();
+  static final Lock lock = new TASLock();
+
+  // un semáforo con un único permit (binario) es equivalente a un lock
+  static final Semaphore semaphore = new Semaphore(1);
 
   public static void main(String[] a) throws InterruptedException {
     System.out.println("Ejemplo de una condición de carrera (race condition)");
@@ -34,7 +39,12 @@ public class RaceConditionSolution {
   }
 
   static void doWork() {
-    lock.lock();
+    // lock.lock();
+    try {
+      semaphore.acquire();
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    } // s--
     try {
       // Critical Section Begin
       for (int i = 0; i < 10000; i++) {
@@ -42,12 +52,18 @@ public class RaceConditionSolution {
       }
       // Critical Section End
     } finally {
-      lock.unlock();
+      // lock.unlock();
+      semaphore.release();
     }
   }
 
   static void undoWork() {
-    lock.lock();
+    // lock.lock();
+    try {
+      semaphore.acquire();
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
     try {
       // Critical Section Begin
       for (int i = 0; i < 10000; i++) {
@@ -55,7 +71,8 @@ public class RaceConditionSolution {
       }
       // Critical Section End
     } finally {
-      lock.unlock();
+      // lock.unlock();
+      semaphore.release();
     }
   }
 }
