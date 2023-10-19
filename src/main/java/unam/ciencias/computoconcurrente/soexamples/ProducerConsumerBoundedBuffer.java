@@ -37,6 +37,7 @@ public class ProducerConsumerBoundedBuffer<T> implements Buffer<T> {
     while (this.isFull()) {
       // wait till there's room to produce something
       if (Thread.interrupted()) {
+        // abort in case we are said to be interrupted
         throw new InterruptedException();
       }
       Thread.yield();
@@ -50,6 +51,7 @@ public class ProducerConsumerBoundedBuffer<T> implements Buffer<T> {
     while (this.isEmpty()) {
       // wait till there is something to consume
       if (Thread.interrupted()) {
+        // abort in case we are said to be interrupted
         throw new InterruptedException();
       }
       Thread.yield();
