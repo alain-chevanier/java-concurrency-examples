@@ -12,8 +12,8 @@ public class ProducerConsumerBounderBufferMain {
 
   static final int TIMEOUT_MS = 4000;
 
-  static final int PRODUCERS = 1;
-  static final int CONSUMERS = 1;
+  static final int PRODUCERS = 2;
+  static final int CONSUMERS = 4;
 
   static List<Thread> producersThreads = new ArrayList<>(PRODUCERS);
   static List<Thread> consumersThreads = new ArrayList<>(CONSUMERS);

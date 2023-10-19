@@ -2,6 +2,7 @@ package unam.ciencias.computoconcurrente.soexamples;
 
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class ProducerConsumerBoundedBuffer<T> implements Buffer<T> {
   public static final int DEFAULT_SIZE = 20;
@@ -26,6 +27,10 @@ public class ProducerConsumerBoundedBuffer<T> implements Buffer<T> {
     this.nextPutIndex = 0;
     this.nextTakeIndex = 0;
     this.buffer = (T[]) new Object[size];
+
+    this.mutex = new ReentrantLock();
+    this.availableElement = new Semaphore(0);
+    this.availableSpot = new Semaphore(size);
   }
 
   public int capacity() {
@@ -33,32 +38,30 @@ public class ProducerConsumerBoundedBuffer<T> implements Buffer<T> {
   }
 
   public void put(T item) throws InterruptedException {
-    while (this.isFull()) {
-      // wait till there's room to produce something
-      if (Thread.interrupted()) {
-        // abort in case we are said to be interrupted
-        throw new InterruptedException();
-      }
-      Thread.yield();
+    this.availableSpot.acquire();
+    this.mutex.lock();
+    try {
+      this.buffer[this.nextPutIndex] = item;
+      this.nextPutIndex = (this.nextPutIndex + 1) % this.size;
+      this.elements++;
+    } finally {
+      this.mutex.unlock();
     }
-    this.buffer[this.nextPutIndex] = item;
-    this.nextPutIndex = (this.nextPutIndex + 1) % this.size;
-    this.elements++;
+    this.availableElement.release();
   }
 
   public T take() throws InterruptedException {
-    while (this.isEmpty()) {
-      // wait till there is something to consume
-      if (Thread.interrupted()) {
-        // abort in case we are said to be interrupted
-        throw new InterruptedException();
-      }
-      Thread.yield();
-    }
+    this.availableElement.acquire();
     T value;
-    this.elements--;
-    value = this.buffer[this.nextTakeIndex];
-    this.nextTakeIndex = (this.nextTakeIndex + 1) % size;
+    this.mutex.lock();
+    try {
+      this.elements--;
+      value = this.buffer[this.nextTakeIndex];
+      this.nextTakeIndex = (this.nextTakeIndex + 1) % size;
+    } finally {
+      this.mutex.unlock();
+    }
+    this.availableSpot.release();
 
     return value;
   }
