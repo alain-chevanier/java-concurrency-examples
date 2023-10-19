@@ -1,8 +1,7 @@
 package unam.ciencias.computoconcurrente.soexamples;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.Lock;
 
 public class ProducerConsumerBoundedBuffer<T> implements Buffer<T> {
   public static final int DEFAULT_SIZE = 20;
