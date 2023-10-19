@@ -35,10 +35,10 @@ public class ProducerConsumerBoundedBuffer<T> implements Buffer<T> {
 
   public void put(T item) throws InterruptedException {
     while (this.isFull()) {
+      // wait till there's room to produce something
       if (Thread.interrupted()) {
         throw new InterruptedException();
       }
-      // wait till there's an available spot
       Thread.yield();
     }
     this.buffer[this.nextPutIndex] = item;
@@ -48,10 +48,10 @@ public class ProducerConsumerBoundedBuffer<T> implements Buffer<T> {
 
   public T take() throws InterruptedException {
     while (this.isEmpty()) {
+      // wait till there is something to consume
       if (Thread.interrupted()) {
         throw new InterruptedException();
       }
-      // wait till there is something to consume
       Thread.yield();
     }
     T value;
