@@ -12,8 +12,8 @@ public class ProducerConsumerBounderBufferMain {
 
   static final int TIMEOUT_MS = 4000;
 
-  static final int PRODUCERS = 2;
-  static final int CONSUMERS = 2;
+  static final int PRODUCERS = 1;
+  static final int CONSUMERS = 1;
 
   static List<Thread> producersThreads = new ArrayList<>(PRODUCERS);
   static List<Thread> consumersThreads = new ArrayList<>(CONSUMERS);
@@ -68,6 +68,8 @@ public class ProducerConsumerBounderBufferMain {
 
     System.out.println("Produced elems: " + allProducedElems.size()
       + ". Consumed elems: " + allConsumedElems.size());
+
+    System.out.println("Any consumed elements is null? " + allConsumedElems.stream().anyMatch(Objects::isNull));
 
     allProducedElems.sort(Integer::compareTo);
     allConsumedElems.sort(Integer::compareTo);
