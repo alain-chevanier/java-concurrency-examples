@@ -6,33 +6,36 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
-public class RoomsExample {
+public class RoomManagerExample {
   static final int THREADS = 8;
   static final int ROOMS = 3;
-  static final int ITERATIONS = 1000;
-  static final int SIMULATION_DURATION_MS = 10000;
+  static final int ITERATIONS = 500;
+  static final int SIMULATION_DURATION_MS = 20000;
   static List<Thread> allThreads = new ArrayList<>(THREADS);
-  static final Rooms rooms;
+  static final Rooms roomManager;
   static int validStates = 0;
   static int totalStates = 0;
 
   static Boolean[] threadFinished = new Boolean[THREADS];
 
+  static int[] exitsInRoom = new int[ROOMS];
+
   static {
-    rooms =  new RoomsImpl(ROOMS);
+    roomManager =  new RoomManager(ROOMS);
     for (int roomId = 0; roomId < ROOMS; roomId++) {
       final int finalRoomId = roomId;
-      rooms.setExitHandlers(roomId, () -> System.out.println("last thread to leave room " + finalRoomId));
+      roomManager.setExitHandlers(roomId, () -> exitsInRoom[finalRoomId]++);
     }
   }
 
   public static void main(String[] args) throws InterruptedException {
-    Thread verifier = new Thread(RoomsExample::verifyRoomsState, "Verifier");
+    Thread verifier = new Thread(RoomManagerExample::verifyRoomsState, "Verifier");
     verifier.setDaemon(true);
 
     for (int i = 0; i < THREADS; i++) {
-      Thread consumer = new Thread(RoomsExample::doWork, "Thread" + (i+1));
+      Thread consumer = new Thread(RoomManagerExample::doWork, "Thread" + (i+1));
       allThreads.add(consumer);
     }
 
@@ -55,11 +58,23 @@ public class RoomsExample {
     }
     verifier.join();
 
-    System.out.printf("Valid states vs total states %d vs %d\n", validStates, totalStates);
-    System.out.printf("All threads finished %s\n", Arrays.stream(threadFinished).allMatch(finished -> finished));
+    System.out.printf("Valid states vs total states %d vs %d%n", validStates, totalStates);
+    System.out.printf("All threads finished? -> %s%n", Arrays.stream(threadFinished).allMatch(finished -> finished));
+    List<String> strings = Arrays.stream(exitsInRoom)
+                              .mapToObj(Integer::toString)
+                              .collect(Collectors.toList());
+    System.out.println("Exits by room: " + String.join(", ", strings));
   }
 
   static void doWork() {
+    try {
+      doWorkAux();
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  static void doWorkAux() throws InterruptedException {
     threadFinished[ThreadID.get()] = false;
     for (int it = 0; it < ITERATIONS; it++) {
       if (Thread.interrupted()) {
@@ -70,18 +85,18 @@ public class RoomsExample {
         return;
       }
       int roomId = Math.abs(ThreadLocalRandom.current().nextInt() % ROOMS);
-      rooms.enter(roomId);
+      roomManager.enter(roomId);
       if (!sleepRandomTime(10)) {
         continue;
       }
-      rooms.exit();
+      roomManager.exit();
     }
     threadFinished[ThreadID.get()] = true;
   }
 
   static void verifyRoomsState() {
     while (allThreads.stream().anyMatch(Thread::isAlive)) {
-      int[] threadsInRoom = rooms.getThreadsInRooms();
+      int[] threadsInRoom = roomManager.getThreadsInRooms();
       int busyRooms = 0;
       for (int threadsInRoomI : threadsInRoom) {
         busyRooms += threadsInRoomI > 0 ? 1 : 0;
