@@ -1,9 +1,9 @@
-package unam.ciencias.computoconcurrente.synchronization;
+package unam.ciencias.computoconcurrente.blockingsynchronization;
 
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class ThreadCoordinationExample {
+public class ThreadCoordinationUsingSemaphoresExample {
   // counts the numbers of produced elements
   static Semaphore synch = new Semaphore(0);
   static final int VALUES_TO_PRODUCE = 1000;
@@ -47,7 +47,7 @@ public class ThreadCoordinationExample {
     int oddNumCount = 0;
     for (int i = 0; i < values.length; i++) {
       // TODO: wait till there's an element to consume
-      synch.acquire(); // spin/yield si synch <= 0
+      synch.acquire(); // spin/yield if synch <= 0
       int value = values[i];
       oddNumCount += value % 2 == 1 ? 1 : 0;
       // sleep some random time before analysing next element

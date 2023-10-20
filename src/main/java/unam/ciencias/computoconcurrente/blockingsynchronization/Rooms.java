@@ -1,4 +1,4 @@
-package unam.ciencias.computoconcurrente.synchronization;
+package unam.ciencias.computoconcurrente.blockingsynchronization;
 
 public interface Rooms {
   void enter(int roomId) throws InterruptedException;

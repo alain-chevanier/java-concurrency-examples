@@ -1,4 +1,4 @@
-package unam.ciencias.computoconcurrente.synchronization;
+package unam.ciencias.computoconcurrente.blockingsynchronization;
 
 import unam.ciencias.computoconcurrente.soexamples.ThreadID;
 
