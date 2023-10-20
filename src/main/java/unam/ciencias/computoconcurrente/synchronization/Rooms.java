@@ -1,7 +1,7 @@
 package unam.ciencias.computoconcurrente.synchronization;
 
 public interface Rooms {
-  void enter(int roomId);
+  void enter(int roomId) throws InterruptedException;
 
   boolean exit();
 

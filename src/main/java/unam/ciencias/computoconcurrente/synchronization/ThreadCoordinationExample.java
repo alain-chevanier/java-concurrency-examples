@@ -20,17 +20,19 @@ public class ThreadCoordinationExample {
     consumer.join();
 
     System.out.print("Actual produced odd numbers count: ");
+    synch.release(values.length);
     countOddNumbers();
   }
 
   static void produceValues() {
-    for (int i = 0; i < VALUES_TO_PRODUCE; i++) {
+    for (int i = 0; i < values.length; i++) {
       values[i] = ThreadLocalRandom.current().nextInt();
       // TODO: notify there's a new element that can be consumed
+      synch.release();
       // sleep some random time before next elem is produced
       sleepRandomTime();
     }
-    System.out.println(Thread.currentThread().getName() + " is done. ");
+    System.out.println(Thread.currentThread().getName() + " is done.");
   }
 
   static void countOddNumbers() {
@@ -45,6 +47,7 @@ public class ThreadCoordinationExample {
     int oddNumCount = 0;
     for (int i = 0; i < values.length; i++) {
       // TODO: wait till there's an element to consume
+      synch.acquire(); // spin/yield si synch <= 0
       int value = values[i];
       oddNumCount += value % 2 == 1 ? 1 : 0;
       // sleep some random time before analysing next element
