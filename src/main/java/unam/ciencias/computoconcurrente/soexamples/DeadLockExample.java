@@ -20,7 +20,8 @@ public class DeadLockExample {
 
     producer.join();
     consumer.join();
-//
+
+    // print this line once both threads are done
     System.out.println("Execution finished ");
 
   }
