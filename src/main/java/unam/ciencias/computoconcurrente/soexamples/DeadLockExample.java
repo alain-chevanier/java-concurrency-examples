@@ -43,10 +43,10 @@ public class DeadLockExample {
   static void p1() {
     try {
       Q.acquire();
-      System.out.printf("%s acquired semaphore Q\n", Thread.currentThread().getName());
+      System.out.printf("%s acquired semaphore Q%n", Thread.currentThread().getName());
       Thread.sleep(100);
       S.acquire();
-      System.out.printf("%s acquired semaphore S\n", Thread.currentThread().getName());
+      System.out.printf("%s acquired semaphore S%n", Thread.currentThread().getName());
       Q.release();
       S.release();
     } catch (InterruptedException e) {
