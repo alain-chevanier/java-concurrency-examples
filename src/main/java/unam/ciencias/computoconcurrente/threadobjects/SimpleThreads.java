@@ -60,11 +60,11 @@ public class SimpleThreads {
       };
       // wait using sleep
       try {
-        for (String string : importantInfo) {
+        for (String str : importantInfo) {
           // Pause for ~4 seconds
           Thread.sleep(4000);
           // Print a message
-          threadMessage(importantInfo[i]);
+          threadMessage(str);
         }
       } catch (InterruptedException e) {
         threadMessage("I wasn't done!");
