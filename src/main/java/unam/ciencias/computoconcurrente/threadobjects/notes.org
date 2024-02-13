@@ -37,15 +37,14 @@ The ~Runnable~ interface defines a single method, ~run~, meant to contain the co
 
 #+begin_src java
 public class HelloRunnable implements Runnable {
-    @Override
-    public void run() {
-        System.out.println("Hello from a thread!");
-    }
+  @Override
+  public void run() {
+    System.out.println("Hello from a thread!");
+  }
 
-    public static void main(String args[]) {
-        (new Thread(new HelloRunnable())).start();
-    }
-
+  public static void main(String args[]) {
+    (new Thread(new HelloRunnable())).start();
+  }
 }
 #+end_src
 
@@ -54,18 +53,18 @@ public class HelloRunnable implements Runnable {
 
  #+begin_src java
 public class HelloThread extends Thread {
-    @Override
-    public void run() {
-        System.out.println("Hello from a thread!");
-    }
+  @Override
+  public void run() {
+    System.out.println("Hello from a thread!");
+  }
 
-    public static void main(String args[]) {
-      Thread helloThread = new HelloThread();
-      // this runs on current thread
-      helloThread.run();
-      // this runs in a new thread
-      helloThread.start();
-    }
+  public static void main(String args[]) {
+    Thread helloThread = new HelloThread();
+    // this runs on current thread
+    helloThread.run();
+    // this runs in a new thread
+    helloThread.start();
+  }
 }
  #+end_src
 
