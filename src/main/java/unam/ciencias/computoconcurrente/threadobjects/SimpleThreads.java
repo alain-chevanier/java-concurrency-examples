@@ -15,7 +15,7 @@ public class SimpleThreads {
     threadMessage("Starting MessageLoop thread");
     long startTime = System.currentTimeMillis();
 
-    Thread childThread = new Thread(new MessageLoop());
+    Thread childThread = new Thread(SimpleThreads::messageLoop);
     childThread.start();
 
     threadMessage("Waiting for MessageLoop thread to finish");
@@ -39,20 +39,8 @@ public class SimpleThreads {
     threadMessage("Finally!");
   }
 
-  private static boolean amIDoneWaiting(long patience, long startTime, Thread t) {
-    long elapsedTime = System.currentTimeMillis() - startTime;
-    return (elapsedTime > patience) && t.isAlive();
-  }
-
-  static void threadMessage(String message) {
-    String threadName = Thread.currentThread().getName();
-    System.out.format("%s: %s%n", threadName, message);
-  }
-
-  private static class MessageLoop implements Runnable {
-    @Override
-    public void run() {
-      String[] importantInfo = {
+  private static void messageLoop() {
+    String[] importantInfo = {
         "Mares eat oats",
         "Does eat oats",
         "Little lambs eat ivy",
@@ -69,6 +57,15 @@ public class SimpleThreads {
       } catch (InterruptedException e) {
         threadMessage("I wasn't done!");
       }
-     }
+  }
+
+  private static boolean amIDoneWaiting(long patience, long startTime, Thread t) {
+    long elapsedTime = System.currentTimeMillis() - startTime;
+    return (elapsedTime > patience) && t.isAlive();
+  }
+
+  static void threadMessage(String message) {
+    String threadName = Thread.currentThread().getName();
+    System.out.format("%s: %s%n", threadName, message);
   }
 }
