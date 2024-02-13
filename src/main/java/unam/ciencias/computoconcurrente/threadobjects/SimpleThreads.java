@@ -9,7 +9,7 @@ public class SimpleThreads {
     // Delay, in milliseconds before
     // we interrupt MessageLoop
     // thread (default one hour).
-    long patience = 1000 * 2; // 60 * 60;
+    long patience = 1000 * 10; // 60 * 60;
 
     // If command line argument
     // present, gives patience
@@ -61,9 +61,13 @@ public class SimpleThreads {
   }
 
   private static class MessageLoop implements Runnable {
+    @Override
     public void run() {
       String[] importantInfo = {
-        "Mares eat oats", "Does eat oats", "Little lambs eat ivy", "A kid will eat ivy too"
+        "Mares eat oats",
+        "Does eat oats",
+        "Little lambs eat ivy",
+        "A kid will eat ivy too"
       };
       // wait using sleep
       try {
@@ -78,24 +82,6 @@ public class SimpleThreads {
       }
 
       // espera utilizando un ciclo de computo muy largo
-      for (int i = 0; i < importantInfo.length; i++) {
-        // Esta es una
-        for (int j = 0; j < 1000000000; j++) {
-          // antes de proceder verificamos si alguien nos ha interrumpido
-          if (Thread.interrupted()) {
-            // Idealmente esto es lo que tenemos que hacer:
-            // throw new InterruptedException();
-            threadMessage("I wasn't done!");
-            return;
-          }
-          if (j == (1000000000 - 1)) {
-            threadMessage("Finish sleeping");
-          }
-        }
-
-        // Print a message
-        threadMessage(importantInfo[i]);
-      }
-    }
+     }
   }
 }
