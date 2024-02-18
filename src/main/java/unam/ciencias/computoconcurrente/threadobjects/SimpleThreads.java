@@ -39,7 +39,7 @@ public class SimpleThreads {
     threadMessage("Finally!");
   }
 
-  private static void messageLoop() {
+  static void messageLoop() {
     String[] importantInfo = {
         "Mares eat oats",
         "Does eat oats",
