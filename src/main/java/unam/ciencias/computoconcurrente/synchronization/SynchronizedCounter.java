@@ -1,17 +1,20 @@
 package unam.ciencias.computoconcurrente.synchronization;
 
-public class SynchronizedCounter {
+public class SynchronizedCounter implements Counter {
   int c = 0;
 
-  synchronized void increment() {
-    c++;
+  @Override
+  public synchronized int increment() {
+    return c++;
   }
 
-  synchronized void decrement() {
-    c--;
+  @Override
+  public synchronized int decrement() {
+    return c--;
   }
 
-  synchronized int value() {
+  @Override
+  public synchronized int value() {
     return c;
   }
 }
