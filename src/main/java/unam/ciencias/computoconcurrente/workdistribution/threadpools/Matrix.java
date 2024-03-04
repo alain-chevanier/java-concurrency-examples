@@ -55,6 +55,8 @@ public class Matrix {
   }
   /** @return array of half-size matrices, backed by original. */
   public Matrix[][] split() {
+    // O(1) pasos
+    // O(1) memoria adicional
     Matrix[][] result = new Matrix[2][2];
     int newDim = dim / 2;
     result[0][0] = new Matrix(data, rowDisplace, colDisplace, newDim); // A_00

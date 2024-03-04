@@ -3,7 +3,6 @@
 ## Equipo de enseñanza
 * Ricchy Alaín Pérez Chevanier <alain.chevanier@ciencias.unam.mx>
 
-
 ## Desarrollo
 En esta práctica trabajarás con una base de código construida con Java 11 y Maven Wrapper, 
 también proveemos pruebas unitarias escritas con la biblioteca **Junit 5.7.2** que te 

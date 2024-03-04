@@ -46,6 +46,7 @@ public class MatrixAdder {
       try {
         int n = a.getDim();
         if (n == 1) {
+          // n <= 100
           c.set(0, 0, a.get(0, 0) + b.get(0, 0));
         } else {
           Matrix[][] aa = a.split(), bb = b.split(), cc = c.split();
@@ -55,7 +56,9 @@ public class MatrixAdder {
             for (int j = 0; j < 2; j++)
               future[i][j] = exec.submit(new AddTask(aa[i][j], bb[i][j], cc[i][j]));
           // wait for them to finish
-          for (int i = 0; i < 2; i++) for (int j = 0; j < 2; j++) future[i][j].get();
+          for (int i = 0; i < 2; i++)
+            for (int j = 0; j < 2; j++)
+              future[i][j].get();
         }
       } catch (Exception ex) {
         ex.printStackTrace();
