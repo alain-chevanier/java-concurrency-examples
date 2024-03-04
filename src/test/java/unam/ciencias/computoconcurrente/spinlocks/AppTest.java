@@ -1,4 +1,4 @@
-package unam.ciencias.computoconcurrente;
+package unam.ciencias.computoconcurrente.spinlocks;
 
 import org.junit.jupiter.api.Test;
 

@@ -6,7 +6,7 @@ import java.util.List;
  * This particular implementation of a lock uses the Peterson's Algorithm which only work for two
  * concurrent threads at most.
  */
-public class PetersonLock implements Lock {
+public class PetersonLock extends Lock {
 
   private boolean[] flags;
   private volatile int lastToArrive;
@@ -17,7 +17,7 @@ public class PetersonLock implements Lock {
 
   @Override
   public void lock() { // acquire
-    int threadId = ThreadID.get(); // Obtengo mi ID: 0, 1
+    int threadId = 0;//ThreadID.get(); // Obtengo mi ID: 0, 1
     // al llegar anuncio que quiero contender por entrar a la
     // sección crítica levantando mi bandera
     flags[threadId] = true;
@@ -28,6 +28,7 @@ public class PetersonLock implements Lock {
     while (hasTheOtherThreadRaisedItsFlag(threadId) && amITheLastToArrive(threadId)) {
       // no hace nada, solo me quedo girando hasta que el otro hilo termine de
       // ejecutar la sección crítica
+      // Thread.yield();
     }
   }
 
@@ -42,7 +43,7 @@ public class PetersonLock implements Lock {
 
   @Override
   public void unlock() {
-    int threadId = ThreadID.get();
+    int threadId = 0;//ThreadID.get();
     // para anunciar que ya terminé de ejecutar la sección crítica simplemente bajo mi bandera
     flags[threadId] = false;
   }

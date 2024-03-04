@@ -7,6 +7,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class DeadLockExample {
   static Semaphore S = new Semaphore(1);
   static Semaphore Q = new Semaphore(1);
+
   public static void main(String[] args) throws InterruptedException {
     System.out.println("Example of a deadlock using 2 threads and 2 semaphores");
 

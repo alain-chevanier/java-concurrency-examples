@@ -1,4 +1,4 @@
-package unam.ciencias.computoconcurrente;
+package unam.ciencias.computoconcurrente.spinlocks;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

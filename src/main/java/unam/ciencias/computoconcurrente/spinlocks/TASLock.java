@@ -1,4 +1,4 @@
-package unam.ciencias.computoconcurrente.spinlocksx;
+package unam.ciencias.computoconcurrente.spinlocks;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
