@@ -1,0 +1,6 @@
+* Filter Algorith Notes
+Filter algorithm is an N-thread mutual exclusion protocol, the idea as follows, we have ~N~ levels if
+if have ~N~ threads, for each level we store which thread arrived last, and for each thread we
+store which level the thread is at; so we need a couple of arrays ~lastToArray~ and ~threadLevel~.
+
+- 
