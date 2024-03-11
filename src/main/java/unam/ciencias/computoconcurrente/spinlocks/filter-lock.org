@@ -1,6 +1,24 @@
 * Filter Algorith Notes
-Filter algorithm is an N-thread mutual exclusion protocol, the idea as follows, we have ~N~ levels if
-if have ~N~ threads, for each level we store which thread arrived last, and for each thread we
-store which level the thread is at; so we need a couple of arrays ~lastToArray~ and ~threadLevel~.
+it is an N-thread mutual exclusion protocol which works as follows:
+- Consider a fixed number of threads ~N~. Let's consider ~N~ levels, for each level we store which thread arrived last,
+  and for each thread we store which level the thread is at; so we need a couple of arrays ~last_to_arrive~ and ~thread_level~.
+- Each thread goes through each level, and in each level before proceeding to the next level it needs to keep checking (spinning) while it is the last to arrive to the current level and if there are threads in a higher level.
+- Pseudocode in the next code snippet:
 
-- 
+#+begin_src python
+N = 5 # any fixed number representing the number of threads
+last_to_array[N]
+thread_level[N]
+
+lock_acquire():
+  my_thread_id = get_thread_id()
+  for level in 0..N:
+    thread_level[my_thread_id] = level
+    last_to_arrive[level] = my_thread_id
+    while last_to_array[level] == my_thread_id and exist_thread_in_higher_level(my_thread_id, level):
+      pass # spin
+
+lock_release():
+  my_thread_id = get_thread_id()
+  thread_level[my_thread_id] = 0
+#+end_src
