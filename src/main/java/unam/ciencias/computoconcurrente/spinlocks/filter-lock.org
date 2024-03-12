@@ -24,8 +24,9 @@ lock_release():
   thread_level[my_thread_id] = -1 # NO_LEVEL
 #+end_src
 
-Note: Implementation can be found at: [[file:FilterLock.java][FilterLock]] class
-You can run the test for the test from [[file:~/Library/Mobile Documents/com~apple~CloudDocs/Projects/ciencias/java-concurrency-examples/src/test/java/unam/ciencias/computoconcurrente/spinlocks/FilterLockTest.java][FilterLockTest]] class to verify the implementation
+Note: Implementation can be found at: [[file:FilterLock.java][FilterLock]] class.
+
+You can run the test for the test from [[file:~/Library/Mobile Documents/com~apple~CloudDocs/Projects/ciencias/java-concurrency-examples/src/test/java/unam/ciencias/computoconcurrente/spinlocks/FilterLockTest.java][FilterLockTest]] class to verify the implementation.
 
 ** Notes to avoid data races
 To avoid data races we need to make sure that before we start to spin we force the caches to be coherent, in this case it is enough that the last write we make goes to a volatile memory location (happens before).
