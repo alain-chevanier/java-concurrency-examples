@@ -1,4 +1,4 @@
-* Filter Algorith Notes
+* Filter Algorithm Notes
 it is an N-thread mutual exclusion protocol which works as follows:
 - Consider a fixed number of threads ~N~. Let's consider ~N~ levels, for each level we store which thread arrived last,
   and for each thread we store which level the thread is at; so we need a couple of arrays ~last_thread_to_arrive~ (victim in the original description) and ~thread_level~ (level in the original description).
