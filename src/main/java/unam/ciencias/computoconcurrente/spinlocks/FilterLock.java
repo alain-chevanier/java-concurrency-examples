@@ -6,25 +6,24 @@ package unam.ciencias.computoconcurrente.spinlocks;
 public class FilterLock extends Lock {
 
   private final int threads;
-  private final VolatileInteger[] threadLevel;
+  private final int[] threadLevel;
   private final VolatileInteger[] lastToArrive;
 
   public FilterLock(int threads) {
     this.threads = threads;
-    threadLevel = new VolatileInteger[threads];
+    threadLevel = new int[threads];
     lastToArrive = new VolatileInteger[threads];
     for(int i = 0; i < threadLevel.length; i++) {
-      threadLevel[i] = new VolatileInteger(-1);
+      threadLevel[i] = -1;
       lastToArrive[i] = new VolatileInteger(-1);
     }
   }
-
 
   @Override
   public void lock() {
     int myId = this.threadID.get();
     for (int myLevel = 0; myLevel < this.threads; myLevel++) {
-      this.threadLevel[myId].setValue(myLevel);
+      this.threadLevel[myId] = myLevel;
       this.lastToArrive[myLevel].setValue(myId);
       while (lastToArrive[myLevel].getValue() == myId && existOtherThreadInHigherLevel(myId, myLevel)) {
         // keep spining
@@ -34,7 +33,7 @@ public class FilterLock extends Lock {
 
   private boolean existOtherThreadInHigherLevel(int myThreadId, int myLevel) {
     for (int threadId = 0; threadId < this.threadLevel.length; threadId++) {
-      if (threadId != myThreadId && this.threadLevel[threadId].getValue() >= myLevel) {
+      if (threadId != myThreadId && this.threadLevel[threadId] >= myLevel) {
         return true;
       }
     }
@@ -45,6 +44,6 @@ public class FilterLock extends Lock {
   @Override
   public void unlock() {
     int myId = this.threadID.get();
-    this.threadLevel[myId].setValue(-1);
+    this.threadLevel[myId] = -1;
   }
 }
