@@ -1,35 +1,37 @@
 * Filter Algorith Notes
 it is an N-thread mutual exclusion protocol which works as follows:
 - Consider a fixed number of threads ~N~. Let's consider ~N~ levels, for each level we store which thread arrived last,
-  and for each thread we store which level the thread is at; so we need a couple of arrays ~last_to_arrive~ (victim in the original description) and ~thread_level~ (level in the original description).
+  and for each thread we store which level the thread is at; so we need a couple of arrays ~last_thread_to_arrive~ (victim in the original description) and ~thread_level~ (level in the original description).
 - Each thread goes through each level, and in each level before proceeding to the next level it needs to keep checking (spinning) while it is the last to arrive to the current level and if there are threads in a higher level.
 - Pseudocode in the next code snippet:
 
 #+begin_src python
 # suppose thread ids go from 1 to N
 N = 5 # any fixed number representing the number of threads
-last_to_array[N]
+last_thread_to_arrive[N]
 thread_level[N]
 
 lock_acquire():
   my_thread_id = get_thread_id()
   for level in 0..N:
     thread_level[my_thread_id] = level
-    last_to_arrive[level] = my_thread_id # Forcing cache coherency in this write is enough
-    while last_to_arrive[level] == my_thread_id and exist_other_thread_in_same_or_higher_level(my_thread_id, level):
-      pass # spin
+    last_thread_to_arrive[level] = my_thread_id # Forcing cache coherency in this write is enough
+    while last_thread_to_arrive[level] == my_thread_id
+          and exist_other_thread_in_same_or_higher_level(my_thread_id, level):
+      pass # keep spinning
 
 lock_release():
   my_thread_id = get_thread_id()
-  thread_level[my_thread_id] = -1 # NO_LEVEL
+  thread_level[my_thread_id] = -1 # NO_LEVEL,
+  # NOTE: this change is eventually propagated as this write does not force cache coherency
 #+end_src
 
 Note: Implementation can be found at: [[file:FilterLock.java][FilterLock]] class.
 
-You can run the test for the test from [[file:~/Library/Mobile Documents/com~apple~CloudDocs/Projects/ciencias/java-concurrency-examples/src/test/java/unam/ciencias/computoconcurrente/spinlocks/FilterLockTest.java][FilterLockTest]] class to verify the implementation.
+You can run the test for the test from [[file:/src/test/java/unam/ciencias/computoconcurrente/spinlocks/FilterLockTest.java][FilterLockTest]] class to verify the implementation.
 
 ** Notes to avoid data races
 To avoid data races we need to make sure that before we start to spin we force the caches to be coherent, in this case it is enough that the last write we make goes to a volatile memory location (happens before).
 
 ** Notes about bus-base architecture performance
-This algorithm has the same problem as /AndersonLock/ (/ALock/) as arrays ~thread_level~ and ~last_to_arrive~ are shared withing the same cache line for several threads.
+This algorithm has the same problem as /AndersonLock/ (/ALock/) as the arrays ~thread_level~ and ~last_thread_to_arrive~ are shared within the same cache line for several threads, and you notify other thread can proceed to the next level when it knows it is no longer the victim (only affected by one thread) of the level or when all other threads leave the CS (affected potentially by all other threads writes to ~thread_level~), therefor this algorith is really inefficient in terms of bus/cache usage as it depend potentially in what all other threads write to the shared memory.

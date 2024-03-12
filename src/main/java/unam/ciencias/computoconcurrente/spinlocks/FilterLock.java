@@ -7,15 +7,15 @@ public class FilterLock extends Lock {
 
   private final int threads;
   private final int[] threadLevel;
-  private final VolatileInteger[] lastToArrive;
+  private final VolatileInteger[] lastThreadToArrive;
 
   public FilterLock(int threads) {
     this.threads = threads;
-    threadLevel = new int[threads];
-    lastToArrive = new VolatileInteger[threads];
+    this.threadLevel = new int[threads];
+    this.lastThreadToArrive = new VolatileInteger[threads];
     for(int i = 0; i < threadLevel.length; i++) {
-      threadLevel[i] = -1;
-      lastToArrive[i] = new VolatileInteger(-1);
+      this.threadLevel[i] = -1;
+      this.lastThreadToArrive[i] = new VolatileInteger(-1);
     }
   }
 
@@ -24,8 +24,8 @@ public class FilterLock extends Lock {
     int myId = this.threadID.get();
     for (int myLevel = 0; myLevel < this.threads; myLevel++) {
       this.threadLevel[myId] = myLevel;
-      this.lastToArrive[myLevel].setValue(myId);
-      while (lastToArrive[myLevel].getValue() == myId && existOtherThreadInHigherLevel(myId, myLevel)) {
+      this.lastThreadToArrive[myLevel].setValue(myId);
+      while (lastThreadToArrive[myLevel].getValue() == myId && existOtherThreadInHigherLevel(myId, myLevel)) {
         // keep spining
       }
     }
