@@ -13,7 +13,8 @@ public class TTASLock extends Lock {
   public void lock() {
     while (true) {
       while (lock.get()) {}
-      if (!lock.getAndSet(true)) return;
+      if (!lock.getAndSet(true))
+        return;
     }
   }
 

@@ -13,9 +13,9 @@ thread_level[N]
 lock_acquire():
   my_thread_id = get_thread_id()
   for level in 0..N:
-    thread_level[my_thread_id] = level
+    thread_level[my_thread_id] = level # aqui debo de forzar coherencia de caches
     last_to_arrive[level] = my_thread_id
-    while last_to_array[level] == my_thread_id and exist_thread_in_higher_level(my_thread_id, level):
+    while last_to_arrive[level] == my_thread_id and exist_thread_in_higher_level(my_thread_id, level):
       pass # spin
 
 lock_release():

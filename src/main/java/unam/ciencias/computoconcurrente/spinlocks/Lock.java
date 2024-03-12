@@ -8,7 +8,7 @@ import lombok.Getter;
 @Getter
 public abstract class Lock {
 
-  private ThreadID threadID = new ThreadID();
+  protected ThreadID threadID = new ThreadID();
   /**
    * The current thread acquires this lock. It might wait some time it the lock has been acquired by
    * another thread

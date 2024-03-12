@@ -25,7 +25,7 @@ public class MCSLock extends Lock {
   public void lock() {
     QNode qnode = myNode.get();
     QNode pred = tail.getAndSet(qnode);
-    if (pred != null) { //  hay un predecesor?
+    if (pred != null) { //  hay un predecesor? me formo en la lista
       qnode.locked = true; // busy
       pred.next = qnode;
       while (qnode.locked) {}
