@@ -23,8 +23,9 @@ lock_acquire():
 lock_release():
   my_thread_id = get_thread_id()
   thread_level[my_thread_id] = -1 # NO_LEVEL,
-  # NOTE: this write is eventually propagated as this write does not force cache coherency,
-  # this might delay other threads a little but we make it to avoid cache invidation storms on every write
+  # NOTE: this write is eventually propagated as it does not force cache coherency,
+  #   this might delay other threads a little but we make it to avoid cache invalidation
+  #   storms on every write
 #+end_src
 
 Note: Implementation can be found at: [[file:FilterLock.java][FilterLock]] class.
