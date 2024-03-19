@@ -4,18 +4,18 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class BackoffLock extends Lock {
-  private final AtomicBoolean lock;
+  private final AtomicBoolean state;
 
   public BackoffLock() {
-    lock = new AtomicBoolean(false);
+    state = new AtomicBoolean(false);
   }
 
   @Override
   public void lock() {
     Backoff backoff = new Backoff(10, 1000);
     while (true) {
-      while (lock.get()) {}
-      if (!lock.getAndSet(true)) {
+      while (state.get()) {}
+      if (!state.getAndSet(true)) {
         return;
       } else {
         backoff.backoff();
@@ -25,7 +25,7 @@ public class BackoffLock extends Lock {
 
   @Override
   public void unlock() {
-    lock.set(false);
+    state.set(false);
   }
 }
 

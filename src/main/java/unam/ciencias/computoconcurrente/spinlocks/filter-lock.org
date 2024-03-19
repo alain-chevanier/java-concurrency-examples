@@ -1,8 +1,11 @@
-* Filter Algorithm Notes
-it is an N-thread mutual exclusion protocol which works as follows:
-- Consider a fixed number of threads ~N~. Let's consider ~N~ levels, for each level we store which thread arrived last,
-  and for each thread we store which level the thread is at; so we need a couple of arrays ~last_thread_to_arrive~ (victim in the original description) and ~thread_level~ (level in the original description).
-- Each thread goes through each level, and in each level before proceeding to the next level it needs to keep checking (spinning) while it is the last to arrive to the current level and if there are threads in a higher level.
+* BackoffLock
+Essentilly the same as TTASLock, but when it fails to get the lock it backs off, which means it stop contending for the lock as there must be contention.
+
+It improves performance compare to TTASLock, but sleep times are not portable across architectures or even computer capabilities.
+
+* Queue Locks: AndersonLock (/ALock/)
+[[file:TASLock.java][TASLock]], [[file:TTASLock.java][TTASLock]] and [[file:BackoffLock.java][BackoffLock]] do not only have poor performance on bus-based architectures, but they do not offer any fairness property, to solve both problems we can use a queue where theevel in the original description).
+- Each thread goes through each level, and in each level before proceeding to the next level it needs to keep checking (spinning) while it is the last to arrive to the current level and if there are other threads in the same or a higher level.
 - Pseudocode in the next code snippet:
 
 #+begin_src python
