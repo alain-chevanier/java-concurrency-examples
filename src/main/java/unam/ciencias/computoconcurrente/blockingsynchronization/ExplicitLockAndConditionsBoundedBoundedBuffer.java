@@ -40,7 +40,7 @@ public class ExplicitLockAndConditionsBoundedBoundedBuffer<T> implements Bounded
       items[putIndex] = x;
       putIndex = (putIndex + 1) % capacity();
       ++elements;
-      notEmpty.signal();
+      notEmpty.signalAll();
     } finally {
       lock.unlock();
     }
@@ -58,7 +58,7 @@ public class ExplicitLockAndConditionsBoundedBoundedBuffer<T> implements Bounded
       T x = items[takeIndex];
       takeIndex = (takeIndex + 1) % capacity();
       --elements;
-      notFull.signal();
+      notFull.signalAll();
       return x;
     } finally {
       lock.unlock();
