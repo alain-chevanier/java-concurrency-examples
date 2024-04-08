@@ -9,7 +9,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class RoomManager implements Rooms {
-  private final int availableRooms;
+  private final int rooms;
   private final int[] threadsInRoom;
   private final Runnable[] exitHandlers;
 
@@ -17,7 +17,7 @@ public class RoomManager implements Rooms {
   private final Map<Integer,Integer> threadRoom;
   // threadId -> turn mapping
   private final Map<Integer,Long> threadTurn;
-  private int busyRoomId;
+  private int activeRoomId;
   // threadId -> roomId mapping
   private final Map<Integer,Integer> roomThreadWantsToEnter;
   private long nextTurn;
@@ -28,13 +28,13 @@ public class RoomManager implements Rooms {
   static final int NO_ROOM = -1;
 
   public RoomManager(int rooms) {
-    this.availableRooms = rooms;
+    this.rooms = rooms;
     this.threadsInRoom = new int[rooms];
     this.threadRoom = new HashMap<>();
     this.exitHandlers = new Runnable[rooms];
     this.mutex = new ReentrantLock();
     this.roomsAreEmpty = this.mutex.newCondition();
-    this.busyRoomId = NO_ROOM;
+    this.activeRoomId = NO_ROOM;
     this.nextTurn = 0;
     this.threadTurn = new HashMap<>();
     this.roomThreadWantsToEnter = new HashMap<>();
@@ -70,7 +70,7 @@ public class RoomManager implements Rooms {
 
       this.threadsInRoom[roomId]++;
       this.threadRoom.put(myThreadId, roomId);
-      this.busyRoomId = roomId;
+      this.activeRoomId = roomId;
     } finally {
       this.mutex.unlock();
     }
@@ -81,7 +81,7 @@ public class RoomManager implements Rooms {
   }
 
   private boolean isNotTheBusyRoom(int roomId) {
-    return (this.isThereABusyRoom() && busyRoomId != roomId);
+    return (this.isThereABusyRoom() && activeRoomId != roomId);
   }
 
   private boolean isBusyRoomButAnyoneGoesBefore(long myTurn, int roomId) {
@@ -89,11 +89,11 @@ public class RoomManager implements Rooms {
   }
 
   private boolean isBusyRoom(int roomId) {
-    return (this.isThereABusyRoom() && busyRoomId == roomId);
+    return (this.isThereABusyRoom() && activeRoomId == roomId);
   }
 
   private boolean isThereABusyRoom() {
-    return busyRoomId != NO_ROOM;
+    return activeRoomId != NO_ROOM;
   }
 
   private boolean anyoneMustEnterBefore(long myTurn, int roomId) {
@@ -114,7 +114,7 @@ public class RoomManager implements Rooms {
       int roomId = this.threadRoom.get(ThreadID.get());
       this.threadsInRoom[roomId]--;
       if (this.isLastThreadToLeaveRoom(roomId)) {
-        busyRoomId = NO_ROOM;
+        activeRoomId = NO_ROOM;
         this.exitHandlers[roomId].run();
         roomsAreEmpty.signalAll();
         return true;

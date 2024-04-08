@@ -23,7 +23,7 @@ public class RoomManagerExample {
   static int[] exitsInRoom = new int[ROOMS];
 
   static {
-    roomManager =  new RoomManager(ROOMS);
+    roomManager =  new RoomManagerSketch(ROOMS);
     for (int roomId = 0; roomId < ROOMS; roomId++) {
       final int finalRoomId = roomId;
       roomManager.setExitHandlers(roomId, () -> exitsInRoom[finalRoomId]++);
