@@ -46,7 +46,7 @@ public class MatrixAdder {
       try {
         int n = a.getDim();
         if (n == 1) {
-          // n <= 100
+          // usually we choose a large enough `n`, for example ``n <= 100`
           c.set(0, 0, a.get(0, 0) + b.get(0, 0));
         } else {
           Matrix[][] aa = a.split(), bb = b.split(), cc = c.split();
