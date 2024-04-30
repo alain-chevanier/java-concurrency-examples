@@ -1,7 +1,12 @@
 #+title Analysis of Work and Span for Matrix Addition
 
 * Calculating Work
-Let ~A_1(n)~  el trabajo necesario para sumar dos matrices cuadradas de tamaño `nxn`:
+Let ~A_1(n)~  be the work to add two ~nxn~ matrices.
+
+Simply defining the recursion fo dive and conquer it holds that ~A_1(n) = 4*A_1(n/2) + O(1)~.
+This works under the assumption that splitting matrices into 4 takes ~O(1)~.
+
+Now let's try to figure out to which number this recurrency takes us:
 
 #+begin_src latex
 A_1(n)  = 4*A_1(n/2) + O(1)
@@ -18,31 +23,44 @@ A_1(n)  = 4*A_1(n/2) + O(1)
 #+end_src
 
 *Notes*:
-1. The sum ~1 + a + a^2 + ... + a^k = (a^[k+1] - 1) / (a-1).~
-2. By definition ~2^log(n) = n.~
+1. The sum ~1 + a + a^2 + ... + a^k = (a^[k+1] - 1) / (a-1)~
+2. By definition ~2^log(n) = n~
 
-* Proof by Induction
-To be proved ~A_1(n)~ es ~O(n^2)~.
+Now let's prove by induction that our reasoning is correct.
 
-** Base case ~n = 1, 2~
+** Proof by Induction
+To be proved ~A_1(n)~ is ~O(n^2)~.
+
+*** Base case ~n = 1, 2~
 
 #+begin_src latex
-A_1(1) es 1
+A_1(1)  = 1
+... and
 A_1(2)  = 4*A_1(1) + O(1)
         = 4 + O(1)
         = 2^2 + O(1)
 #+end_src
 
-** Inductive step
+*** Inductive step
 
 Let's suppor that it hold for all ~k < n~, that is ~A_1(k)~ is ~O(k^2)~, i.e  ~A_1(k) = a*k^2 + b~ for some integers ~a!=0~ and ~b~.
 
 #+begin_src
 A_1(n)  = 4 A1(n/2) + O(1)
-        ... por hipotesis de induccion
+        ... inductive hypothesis
         = 4*(a*(n/2)^2 + b) + O(1)
         = 4*a*(n^2)/4 + 4*b + O(1)
         = a*n^2 + [4*b + O(1)]
         = O(n^2) + O(1)
         = O(n^2)
 #+end_src
+
+
+* Calculating Span
+
+Let ~A_inf(n)~  be the work to add two ~nxn~ matrices.
+
+Simply defining the recursion fo dive and conquer it holds that ~A_inf(n) = A_inf(n/2) + O(1)~, as we can perform all additions at the same time.
+This works under the assumption that splitting matrices into 4 takes ~O(1)~.
+
+By an analogous reasoning to the one presented in the previous section, ~A_inf(n)~ is ~O(log(n))~.
