@@ -146,6 +146,7 @@ public class SleepMessages {
           (str) -> {
               try {
                 Thread.sleep (4000);
+                System.out.println(str);
                 // print str
               } catch (InterruptedException e) {
                 // no hagas nada
