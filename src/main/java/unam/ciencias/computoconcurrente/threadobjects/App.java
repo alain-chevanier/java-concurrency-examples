@@ -12,16 +12,18 @@ public class App {
     inheritThread.start();
 
     Thread anonymousClassThread = new Thread(
-      () -> System.out.printf("%s: Hello from anonymous class\n", Thread.currentThread().getName())
+      () -> System.out.printf("%s: Hello from anonymous class\n",
+                              Thread.currentThread().getName())
     );
     anonymousClassThread.start();
 
     Thread methodReferenceThread = new Thread(App::sleepingRoutine);
-    // is the same as ~new Thread(() -> sleepingRoutine());~, but more functional-like
+    // is the same as ~new Thread(() -> sleepingRoutine())~
     methodReferenceThread.start();
 
     Thread.sleep(5000);
-    System.out.printf("%s: Main thread will finish\n", Thread.currentThread().getName());
+    System.out.printf("%s: Main thread will finish\n",
+                      Thread.currentThread().getName());
   }
 
   static void sleepingRoutine() {
@@ -36,19 +38,17 @@ public class App {
       .forEach((str) -> {
           try {
             Thread.sleep(4000);
+            System.out.printf("%s -> CHILD THREAD: %s\n",
+                              Thread.currentThread().getName(),
+                              str);
           } catch (InterruptedException e) {
             throw new RuntimeException(e);
           }
-          // Print a message
-          System.out.printf("%s -> CHILD THREAD: %s\n",
-                            Thread.currentThread().getName(),
-                            str);
         });
   }
 }
 
 class HelloRunnable implements Runnable {
-
   @Override
   public void run() {
     System.out.printf(

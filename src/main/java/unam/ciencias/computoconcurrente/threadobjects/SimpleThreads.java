@@ -11,7 +11,6 @@ public class SimpleThreads {
     // thread (default one hour).
     long patience = 1000 * 10; // 60 * 60;
 
-
     threadMessage("Starting MessageLoop thread");
     long startTime = System.currentTimeMillis();
 

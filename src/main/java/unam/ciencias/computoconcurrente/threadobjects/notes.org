@@ -1,4 +1,6 @@
 #+title: Java: Thread Objects
+#+author: Oracle Official Documentation
+
 * Concurrency
 Computer users take it for granted that their systems can do more than one thing at a time. They assume that they can continue to work in a word processor, while other applications download files, manage the print queue, and stream audio. Even a single application is often expected to do more than one thing at a time. For example, that streaming audio application must simultaneously read the digital audio off the network, decompress it, manage playback, and update its display. Even the word processor should always be ready to respond to keyboard and mouse events, no matter how busy it is reformatting text or updating the display. Software that can do such things is known as concurrent software.
 
@@ -32,9 +34,9 @@ Each thread is associated with an instance of the class ~Thread~. There are two 
 
 To directly control thread creation and management, simply instantiate ~Thread~ each time the application needs to initiate an asynchronous task.
 To abstract thread management from the rest of your application, pass the application's tasks to an executor.
-This section documents the use of Thread objects. Executors are discussed with other high-level concurrency objects.
+This section documents the use of ~Thread~ objects. ~Executors~ are discussed with other high-level concurrency objects.
 
-An application that creates an instance of Thread must provide the code that will run in that thread. There are two ways to do this:
+An application that creates an instance of ~Thread~ must provide the code that will /run/ in that thread. There are two ways to do this:
 
 ** Provide a Runnable Object
 The ~Runnable~ interface defines a single method, ~run~, meant to contain the code executed in the thread. The ~Runnable~ object is passed to the ~Thread~ constructor, as in the ~HelloRunnable~ example:
@@ -47,7 +49,8 @@ public class HelloRunnable implements Runnable {
   }
 
   public static void main(String args[]) {
-    (new Thread(new HelloRunnable())).start();
+    Thread t = new Thread(new HelloRunnable());
+    t.start();
   }
 }
 #+end_src
@@ -64,8 +67,6 @@ public class HelloThread extends Thread {
 
   public static void main(String args[]) {
     Thread helloThread = new HelloThread();
-    // this runs on current thread
-    helloThread.run();
     // this runs in a new thread
     helloThread.start();
   }
@@ -154,11 +155,8 @@ public class SleepMessages {
             };
 
         Arrays.streams(importantInfo)
-          .forEach(
+          .forEach(consumer);
           // aqui le pasamos un consumidor
-            consumer
-          );
-
     }
 }
 #+end_src
@@ -173,14 +171,13 @@ How does a thread support its own interruption? This depends on what it's curren
 
 #+begin_src java
 for (int i = 0; i < importantInfo.length; i++) {
-    // Pause for 4 seconds
     try {
+        // Pause for 4 seconds
         Thread.sleep(4000);
     } catch (InterruptedException e) {
-        // We've been interrupted: no more messages.
+        // We've been interrupted: need to stop.
         return;
     }
-    // Print a message
     System.out.println(importantInfo[i]);
 }
 #+end_src
