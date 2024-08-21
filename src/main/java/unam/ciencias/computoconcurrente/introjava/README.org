@@ -4,7 +4,10 @@
 * Ejemplos
 
 - Cambiar de base 10 a cualquier base N (2 <= N <= 16)
-  [[file:BaseProcessing.java][BaseProcessing.java]]
+
+  Notas con ejemplos: [[file:Note 20 Aug 2024.pdf][notas]]
+
+  Implementacion en java: [[file:BaseProcessing.java][BaseProcessing.java]]
 
   Para compilar el codigo hay que ejecutar:
   #+begin_src bash
