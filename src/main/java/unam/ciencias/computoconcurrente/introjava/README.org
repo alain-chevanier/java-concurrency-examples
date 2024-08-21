@@ -1,0 +1,17 @@
+#+title: Readme
+#+author: Alain Chevanier
+
+* Ejemplos
+
+- Cambiar de base 10 a cualquier base N (2 <= N <= 16)
+  [[file:BaseProcessing.java][BaseProcessing.java]]
+
+  Para compilar el codigo hay que ejecutar:
+  #+begin_src bash
+  java BaseProcessing.java
+  #+end_src
+
+  Para ejecutar el codigo hay que ejecutar:
+  #+begin_src bash
+  java BaseProcessing
+  #+end_src
