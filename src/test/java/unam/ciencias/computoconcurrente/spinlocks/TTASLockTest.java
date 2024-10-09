@@ -19,4 +19,9 @@ public class TTASLockTest extends BaseTestSuite {
   void eightThreaded() throws InterruptedException {
     LockTestExecutor.performTest(new TTASLock(), 8);
   }
+
+  @Test
+  void twelveThreaded() throws InterruptedException {
+    LockTestExecutor.performTest(new TTASLock(), 12);
+  }
 }

@@ -6,9 +6,11 @@ package unam.ciencias.computoconcurrente.soexamples;
 public class RaceConditionExample {
 
   // variable global que comparten todos los hilos
-  static volatile int counter = 0;
+  static int counter = 0;
 
   static final Lock lock = new PetersonLock();
+
+  static final int MAX_VALUE = 10000000;
 
   public static void main(String[] a) throws InterruptedException {
     System.out.println("Ejemplo de una condición de carrera (race condition)");
@@ -19,8 +21,8 @@ public class RaceConditionExample {
     Thread t2 = new Thread(() -> undoWork());
 
     // aquí arrancamos ambos hilos
-    t1.start();
     t2.start();
+    t1.start();
 
     // esperamos a que terminen
     t1.join();
@@ -35,17 +37,21 @@ public class RaceConditionExample {
 
   static void doWork() {
     // Critical Section Begin
-    for (int i = 0; i < 10000; i++) {
+    lock.lock();
+    for (int i = 0; i < MAX_VALUE; i++) {
       counter++;
     }
+    lock.unlock();
     // Critical Section End
   }
 
   static void undoWork() {
     // Critical Section Begin
-    for (int i = 0; i < 10000; i++) {
+    lock.lock();
+    for (int i = 0; i < MAX_VALUE; i++) {
       counter--;
     }
+    lock.unlock();
     // Critical Section End
   }
 }

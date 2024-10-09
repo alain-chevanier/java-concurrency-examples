@@ -19,4 +19,9 @@ public class TASLockTest extends BaseTestSuite {
   void eightThreaded() throws InterruptedException {
     LockTestExecutor.performTest(new TASLock(), 8);
   }
+
+  @Test
+  void twelveThreaded() throws InterruptedException {
+    LockTestExecutor.performTest(new TASLock(), 12);
+  }
 }

@@ -4,7 +4,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class RoomManagerSketch implement Rooms {
+public class RoomManagerSketch implements Rooms {
   final int rooms;
   final Lock mutex;
   final Condition condition;
@@ -38,7 +38,7 @@ public class RoomManagerSketch implement Rooms {
   }
 
   @Override
-  boolean exit() {
+  public boolean exit() {
     this.mutex.lock ();
     try {
       threadsInActiveRoom--;
@@ -51,21 +51,20 @@ public class RoomManagerSketch implement Rooms {
     } finally {
       this.mutex.unlock();
     }
-    return false;
   }
 
   @Override
-  void setExitHandlers(int roomId, Runnable exitHandler) {
+  public void setExitHandlers(int roomId, Runnable exitHandler) {
 
   }
 
   @Override
-  int countThreadsInRoom(int roomId) {
+  public int countThreadsInRoom(int roomId) {
     return 0;
   }
 
   @Override
-  int[] getThreadsInRooms() {
+  public int[] getThreadsInRooms() {
     return null;
   }
 }

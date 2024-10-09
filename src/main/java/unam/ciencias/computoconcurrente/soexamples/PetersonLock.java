@@ -23,9 +23,11 @@ public class PetersonLock implements Lock {
     lastToArrive = threadId;
     // me quedo girando si el otro hilo también levantó su bandera y llegó primero
     // y me detengo cuando el otro hilo termine de ejecutar el código de la sección crítica
-    while (hasTheOtherThreadRaisedItsFlag(threadId) && amITheLastToArrive(threadId)) {
+    while (hasTheOtherThreadRaisedItsFlag(threadId)
+           && amITheLastToArrive(threadId)) {
       // no hace nada, solo me quedo girando hasta que el otro hilo termine de
       // ejecutar la sección crítica
+      //Thread.yield();
     }
   }
 
