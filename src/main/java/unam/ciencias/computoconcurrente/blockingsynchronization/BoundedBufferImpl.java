@@ -1,5 +1,6 @@
 package unam.ciencias.computoconcurrente.blockingsynchronization;
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -41,18 +42,20 @@ public class BoundedBufferImpl<T>
       while (this.isFull()) {
         // busy - wait ESTO NO FUNCIONA
         // libero el candado
-        // this.lock.unlock();
+        //this.lock.unlock();
         // // me espero tantito
-        // Thread.sleep(10);
-        // Thread.yield();
+        //Thread.sleep(10);
+        //Thread.yield();
         // // vuelvo a adquirir el candado
-        // this.lock.lock();
-        // this.condition.wait(10);
-        this.condition.wait();
+        //this.lock.lock();
+        this.condition.await(10, TimeUnit.MILLISECONDS);
+        //this.condition.await();
       }
       this.buffer[this.putIndex] = item;
       this.putIndex = (this.putIndex + 1) % this.capacity();
-      this.condition.notifyAll();
+      this.elements++;
+      //this.condition.signalAll();
+      this.condition.signal();
     } finally {
       this.lock.unlock();
     }
@@ -65,18 +68,20 @@ public class BoundedBufferImpl<T>
       while (this.isEmpty()) {
         // busy - wait
         // libero el candado
-        // this.lock.unlock();
+        //this.lock.unlock();
         // me espero tantito
         // Thread.sleep(10);
-        // Thread.yield();
+        //Thread.yield();
         // // vuelvo a adquirir el candado
         // this.lock.lock();
-        // this.condition.wait(10); // equivalente a Thread.sleep(10)
-        this.condition.wait();
+        this.condition.await(10, TimeUnit.MILLISECONDS); // equivalente a Thread.sleep(10)
+        // this.condition.await();
       }
       T item = this.buffer[this.takeIndex];
       this.takeIndex = (this.takeIndex + 1) % this.capacity();
-      this.condition.notifyAll();
+      this.elements--;
+      // this.condition.signalAll();
+      this.condition.signal();
       return item;
     } finally {
       this.lock.unlock();

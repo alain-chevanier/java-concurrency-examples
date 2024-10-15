@@ -1,4 +1,4 @@
-// package unam.ciencias.computoconcurrente.introjava;
+package unam.ciencias.computoconcurrente.introjava;
 
 /**
  * Program with the implementation to perform
