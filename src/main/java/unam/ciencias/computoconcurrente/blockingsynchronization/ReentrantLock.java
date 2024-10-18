@@ -34,6 +34,7 @@ public class ReentrantLock implements Lock {
           condition.await();
         } catch (InterruptedException e) {
           e.printStackTrace();
+          return;
         }
       }
 
