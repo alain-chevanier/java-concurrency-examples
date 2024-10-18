@@ -27,7 +27,12 @@ public class MySemaphore implements Semaphore {
     try {
       // what if value is <= 0??
       while (this.value <= 0) {
-        this.condition.await(10, TimeUnit.MILLISECONDS);
+        try {
+          this.condition.await(10, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+          return;
+        }
       }
       this.value--;
     } finally {
@@ -37,7 +42,25 @@ public class MySemaphore implements Semaphore {
 
   @Override
   public void up() {
+    this.lock.lock();
+    try {
+      this.value++;
+      this.condition.signal(); //???
+    } finally {
+      this.lock.unlock();
+    }
+  }
 
+  @Override
+  public int permits() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'permits'");
+  }
+
+  @Override
+  public ThreadID getThreadId() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getThreadId'");
   }
 
 }
