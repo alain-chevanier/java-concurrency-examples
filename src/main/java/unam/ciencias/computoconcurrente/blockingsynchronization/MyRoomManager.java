@@ -21,9 +21,9 @@ public class MyRoomManager implements Rooms {
   private final Runnable[] exitHandlers;
   private int activeRoomId;
   private final Lock mutex;
-  private final Condition roomsAreEmpty;
+  private final Condition inWaitingList;
   private final ThreadLocal<Integer> threadRoom;
-  private final List<Thread> waitingList;
+  private final List<Long> waitingList;
   private final Map<Long, Integer> roomThreadWantsToEnter; // THREAD_ID -> ROOM_ID
 
   static final int NO_ROOM = -1;
@@ -33,7 +33,7 @@ public class MyRoomManager implements Rooms {
     this.threadsInRoom = new int[rooms];
     this.exitHandlers = new Runnable[rooms];
     this.mutex = new ReentrantLock();
-    this.roomsAreEmpty = this.mutex.newCondition();
+    this.inWaitingList = this.mutex.newCondition();
     this.activeRoomId = NO_ROOM;
     this.threadRoom = ThreadLocal.withInitial(() -> NO_ROOM);
     this.waitingList = new LinkedList<>();
@@ -42,28 +42,49 @@ public class MyRoomManager implements Rooms {
 
   public void enter(int roomId)
     throws InterruptedException {
-    Thread currentThread = Thread.currentThread();
     long threadId = Thread.currentThread().getId();
     this.mutex.lock();
     try {
       roomThreadWantsToEnter.put(threadId, roomId);
       while (hayOtroCuartoOcupado(roomId) ||
-
+             (!waitingList.isEmpty() &&
+              (waitingList.get(0) != threadId)
+              || losQueEstanAntesDeMiEnWaitingListQuierenEntrarAlMismoCuartoQueYo())
              // si alguien llego antes que mi
              // y "quiere" entrar a otro cuarto (!= roomId)
              ) {
-        if (!waitingList.contains(currentThread)) {
-          waitingList.add(currentThread);
+        if (!waitingList.contains(threadId)) {
+          waitingList.add(threadId);
         }
-        roomsAreEmpty.await();
+        inWaitingList.await();
       }
-      waitingList.remove(currentThread);
+      waitingList.remove(threadId);
       threadRoom.set(roomId);
       threadsInRoom[roomId]++;
       activeRoomId = roomId;
+      // en caso de que haya mas threads que quieren
+      // entrar al mismo cuarto que yo
+      // inWaitingList.signalAll();
     } finally {
       this.mutex.unlock();
     }
+  }
+
+  private boolean losQueEstanAntesDeMiEnWaitingListQuierenEntrarAlMismoCuartoQueYo() {
+    long myThreadId = Thread.currentThread().getId();
+    for (long threadId : waitingList) {
+      if (threadId == myThreadId) {
+        return true;
+      }
+      int roomOtherThreadWantsToEnter =
+        roomThreadWantsToEnter.get(threadId);
+      int roomIWantToEnter =
+         roomThreadWantsToEnter.get(myThreadId);
+      if (roomIWantToEnter != roomOtherThreadWantsToEnter) {
+        return false;
+      }
+    }
+    return false;
   }
 
   private boolean hayOtroCuartoOcupado(int roomId) {
@@ -83,7 +104,7 @@ public class MyRoomManager implements Rooms {
         activeRoomId = NO_ROOM;
         // cierro la puerta
         exitHandlers[myRoom].run();
-        roomsAreEmpty.signalAll();
+        inWaitingList.signalAll();
         return true;
       }
       return false;
