@@ -17,7 +17,7 @@ public class LockTestExecutor {
     for (int i = 0; i < EXECUTIONS; i++) {
       Counter counter = new ThreadSafeCounter(lock);
       List<Thread> threads = new ArrayList<>(threadsToUse);
-      lock.getThreadID().resetInitialThreadIDTo(0);
+      ThreadID.resetInitialThreadIDTo(0);
 
       for (int j = 0, remainingWork = remainingWorkToBeDistributed;
           j < threadsToUse;
