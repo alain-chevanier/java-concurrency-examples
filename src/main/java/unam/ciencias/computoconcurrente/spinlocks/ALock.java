@@ -2,7 +2,7 @@ package unam.ciencias.computoconcurrente.spinlocks;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ALock extends Lock {
+public class ALock implements Lock {
   private final ThreadLocal<Integer> myIndex;
   private final AtomicInteger tail;
   private final VolatileInteger[] flag;

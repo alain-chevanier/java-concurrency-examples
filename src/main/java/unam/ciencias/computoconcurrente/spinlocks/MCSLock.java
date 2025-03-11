@@ -2,7 +2,7 @@ package unam.ciencias.computoconcurrente.spinlocks;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-public class MCSLock extends Lock {
+public class MCSLock implements Lock {
   public static class QNode {
     volatile boolean locked;
     volatile QNode next;

@@ -3,7 +3,7 @@ package unam.ciencias.computoconcurrente.spinlocks;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class BackoffLock extends Lock {
+public class BackoffLock implements Lock {
   private final AtomicBoolean state;
 
   public BackoffLock() {

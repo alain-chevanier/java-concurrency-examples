@@ -3,7 +3,7 @@ package unam.ciencias.computoconcurrente.spinlocks;
 /**
  * FilterLock
  */
-public class FilterLock extends Lock {
+public class FilterLock implements Lock {
 
   private final int threads;
   private final int[] threadLevel;
@@ -21,7 +21,7 @@ public class FilterLock extends Lock {
 
   @Override
   public void lock() {
-    int myId = this.threadID.get();
+    int myId = ThreadID.get();
     for (int myLevel = 0; myLevel < this.threads; myLevel++) {
       this.threadLevel[myId] = myLevel;
       this.lastThreadToArrive[myLevel].setValue(myId);
@@ -43,7 +43,7 @@ public class FilterLock extends Lock {
 
   @Override
   public void unlock() {
-    int myId = this.threadID.get();
+    int myId = ThreadID.get();
     this.threadLevel[myId] = -1;
   }
 }

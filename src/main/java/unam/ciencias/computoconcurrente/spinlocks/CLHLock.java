@@ -2,7 +2,7 @@ package unam.ciencias.computoconcurrente.spinlocks;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-public class CLHLock extends Lock {
+public class CLHLock implements Lock {
   public static class QNode {
     volatile boolean locked;
 

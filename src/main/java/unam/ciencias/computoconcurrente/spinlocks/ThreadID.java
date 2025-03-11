@@ -3,19 +3,19 @@ package unam.ciencias.computoconcurrente.spinlocks;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ThreadID {
-  private final AtomicInteger nextID = new AtomicInteger(0);
+  private static final AtomicInteger nextID = new AtomicInteger(0);
 
-  private final ThreadLocal<Integer> threadId = ThreadLocal.withInitial(nextID::getAndIncrement);
+  private static final ThreadLocal<Integer> threadId = ThreadLocal.withInitial(nextID::getAndIncrement);
 
-  public void resetInitialThreadIDTo(int newInitialThreadId) {
+  public static void resetInitialThreadIDTo(int newInitialThreadId) {
     nextID.set(newInitialThreadId);
   }
 
-  public int get() {
+  public static int get() {
     return threadId.get();
   }
 
-  public void set(int index) {
+  public static void set(int index) {
     threadId.set(index);
   }
 }

@@ -1,12 +1,10 @@
 package unam.ciencias.computoconcurrente.spinlocks;
 
-import java.util.List;
-
 /**
  * This particular implementation of a lock uses the Peterson's Algorithm which only work for two
  * concurrent threads at most.
  */
-public class PetersonLock extends Lock {
+public class PetersonLock implements Lock {
 
   private boolean[] flags;
   private volatile int lastToArrive;
@@ -17,7 +15,7 @@ public class PetersonLock extends Lock {
 
   @Override
   public void lock() { // acquire
-    int threadId = 0;//ThreadID.get(); // Obtengo mi ID: 0, 1
+    int threadId = ThreadID.get(); // Obtengo mi ID: 0, 1
     // al llegar anuncio que quiero contender por entrar a la
     // sección crítica levantando mi bandera
     flags[threadId] = true;

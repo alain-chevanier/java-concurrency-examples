@@ -2,7 +2,7 @@ package unam.ciencias.computoconcurrente.spinlocks;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class TTASLock extends Lock {
+public class TTASLock implements Lock {
   private final AtomicBoolean lock;
 
   public TTASLock() {
