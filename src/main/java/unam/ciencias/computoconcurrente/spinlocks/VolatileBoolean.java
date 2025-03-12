@@ -9,6 +9,10 @@ public class VolatileBoolean {
     this.value = value;
   }
 
+  public static VolatileBoolean of(boolean value) {
+    return new VolatileBoolean(value);
+  }
+
   public boolean isValue() {
     return value;
   }

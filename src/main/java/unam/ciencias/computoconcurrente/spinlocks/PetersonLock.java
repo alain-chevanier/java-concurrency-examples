@@ -6,11 +6,11 @@ package unam.ciencias.computoconcurrente.spinlocks;
  */
 public class PetersonLock implements Lock {
 
-  private boolean[] flags;
-  private volatile int lastToArrive;
+  private VolatileBoolean[] flags;
+  private volatile int victim;
 
   public PetersonLock() {
-    flags = new boolean[] {false, false};
+    flags = new VolatileBoolean[] {VolatileBoolean.of(false), VolatileBoolean.of(false)};
   }
 
   @Override
@@ -18,31 +18,22 @@ public class PetersonLock implements Lock {
     int threadId = ThreadID.get(); // Obtengo mi ID: 0, 1
     // al llegar anuncio que quiero contender por entrar a la
     // sección crítica levantando mi bandera
-    flags[threadId] = true;
+    flags[threadId].setValue(true);
     // luego anuncio que yo fui el último en llegar
-    lastToArrive = threadId;
+    victim = threadId;
     // me quedo girando si el otro hilo también levantó su bandera y llegó primero
     // y me detengo cuando el otro hilo termine de ejecutar el código de la sección crítica
-    while (hasTheOtherThreadRaisedItsFlag(threadId) && amITheLastToArrive(threadId)) {
+    while (flags[1 - threadId].isValue() && victim == threadId) {
       // no hace nada, solo me quedo girando hasta que el otro hilo termine de
       // ejecutar la sección crítica
       // Thread.yield();
     }
   }
 
-  private boolean hasTheOtherThreadRaisedItsFlag(int myThreadId) {
-    int theOtherThreadId = 1 - myThreadId;
-    return flags[theOtherThreadId];
-  }
-
-  private boolean amITheLastToArrive(int myThreadId) {
-    return lastToArrive == myThreadId;
-  }
-
   @Override
   public void unlock() {
-    int threadId = 0;//ThreadID.get();
+    int threadId = ThreadID.get();
     // para anunciar que ya terminé de ejecutar la sección crítica simplemente bajo mi bandera
-    flags[threadId] = false;
+    flags[threadId].setValue(false);
   }
 }
