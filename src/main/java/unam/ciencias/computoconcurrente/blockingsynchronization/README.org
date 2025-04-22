@@ -2,6 +2,8 @@
 #+author: Alaín Chevanier
 #+date: 2025-04-21
 
+#+options: toc:nil
+
 * Intro
 Up to this point we have aim to solve synchronization problems where it was ok to wait for other thread or process by spinning in a ~while~, constantly reading variables to decide if a condition is met. However, when we do not know how long we will have to wait, this is not a good solution. We need yield the CPU to other threads or processes while we wait. This is called blocking synchronization.
 
@@ -11,7 +13,7 @@ An implementation is said to be thread-safe if it can be used safely in a multi-
 * Producer-Consumer Problem
 The producer-consumer problem is a classic synchronization problem where one or more threads (producers) produce data and place it in a shared buffer, while one or more threads (consumers) consume data from the buffer. The challenge is to ensure that the producers do not overwrite data that has not yet been consumed, and that the consumers do not try to consume data that has not yet been produced.
 
-#+begin_src java
+#+begin_src java -n
 interface BoundedBuffer<T> {
     void produce(T item);
     T consume();
@@ -28,7 +30,7 @@ The lost wakeup problem occurs when a thread that is waiting on a condition vari
 
 To prevent this problem there are two options. Option 1, it is important not to wait until being signaled to check the condition. Instead, the thread should check the condition from time to time while it is waiting. Option 2, the signaling thread must signal all threads that are waiting on the condition variable, even if only one of them can actually proceed.
 
-#+begin_src java
+#+begin_src java -n
 // Option 1:
 void myMethod() {
     lock.lock();
@@ -63,7 +65,7 @@ The spurious wakeup problem occurs when a thread that is waiting on a condition 
 
 To prevent this problem from causing issues, the thread should always check the condition after being signaled.
 
-#+begin_src java
+#+begin_src java -n
 void myMethod() {
     lock.lock();
     try {
@@ -82,7 +84,7 @@ void myMethod() {
 * Condition Variables Code Example
 Code to solve the bounded buffer (producer-consumer problem) using condition variables.
 
-#+begin_src java
+#+begin_src java -n
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.Condition;
 
@@ -136,7 +138,7 @@ Semaphores are a synchronization primitive that allows threads to signal each ot
 * Semaphores Code Example
 Code to solve the bounded buffer (producer-consumer problem) using semaphores.
 
-#+begin_src java
+#+begin_src java -n
 import java.util.concurrent.Semaphore;
 import java.util.Collections;
 
@@ -172,7 +174,7 @@ class BoundedBufferImpl<T> implements BoundedBuffer<T> {
 * Readers-Writers Problem
 The readers-writers problem is a classic synchronization problem where multiple threads (readers) can read data from a shared resource, but only one thread (writer) can write to the resource at a time. The challenge is to ensure that the readers do not interfere with each other while reading, and that the writer does not interfere with the readers while writing.
 
-#+begin_src java
+#+begin_src java -n
 interface ReadWriteLock {
     Lock readLock();
     Lock writeLock();
@@ -181,7 +183,7 @@ interface ReadWriteLock {
 
 * SimpleReadWriteLock
 
-#+begin_src java
+#+begin_src java -n
 class SimpleReadWriteLock implements ReadWriteLock {
     Lock readLock;
     Lock writeLock;
@@ -265,7 +267,7 @@ class SimpleReadWriteLock implements ReadWriteLock {
 The SimpleReadWriteLock implementation has a problem where it can lead to starvation of the writer thread. If there are many reader threads, they can keep acquiring the read lock and prevent the writer from acquiring the write lock. This can lead to a situation where the writer thread is never able to acquire the write lock.
 
 * Writers with preference ReadWriteLock
-#+begin_src java
+#+begin_src java -n
 class FairReadWriteLock implements ReadWriteLock {
     Lock readLock;
     Lock writeLock;
