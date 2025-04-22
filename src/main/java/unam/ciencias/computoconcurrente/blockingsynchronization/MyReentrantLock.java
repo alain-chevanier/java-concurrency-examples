@@ -4,7 +4,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
-public class MyReentrantLock implements Lock {
+public abstract class MyReentrantLock implements Lock {
 
   final Lock nonReentrantLock;
   final Condition condition;
@@ -55,4 +55,6 @@ public class MyReentrantLock implements Lock {
       this.nonReentrantLock.unlock();
     }
   }
+
+
 }

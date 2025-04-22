@@ -15,7 +15,6 @@ public class MyRoomManager implements Rooms {
     boolean canContinue;
   }
 
-
   private final int rooms;
   private final int[] threadsInRoom;
   private final Runnable[] exitHandlers;
@@ -119,10 +118,10 @@ public class MyRoomManager implements Rooms {
   }
 
   public int countThreadsInRoom(int roomId) {
-
+    return 0;
   }
 
-  int[] getThreadsInRooms() {
-
+  public int[] getThreadsInRooms() {
+    return null;
   }
 }

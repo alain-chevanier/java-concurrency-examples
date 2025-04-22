@@ -1,0 +1,16 @@
+#+title: Problema RoomManager
+
+* Problema
+:PROPERTIES:
+:CUSTOM_ID: problema
+:END:
+La clase =RoomManager= administra una colección de /cuartos/, indexados de =0= hasta =m-1= (=m= es el argumento del constructor). Los /threads/ pueden entrar o salir de cualquier /cuarto/ en el rango. Cada /cuarto/ puede contener un número arbitrario de /threads/ simultáneamente, pero solamente un /cuarto/ puede estar ocupado al mismo tiempo. Por ejemplo, si hay dos cuartos, indexados con =0= y =1= respectivamente, entonces cualquier número de /threads/ pueden entrar al /cuarto/ =0=, pero ninguno puede entrar al cuarto =1= mientras el cuarto =0= está ocupado. El archivo [[file:RoomManager.java][RoomManager]] muestra el código base de la clase descrita. A cada /cuarto/ se le puede asignar un =exitHandler= llamando al método  =setExitHandler(i, methodReference)=, donde =i= es el índice del /cuarto/ y =methodReference= el =exitHandler= correspondiente. El =exitHandler= es llamado por el último /thread/ que sale de un /cuarto/, pero antes de que algún /thread/ subsecuente entre a algún otro /cuarto/, este método es llamado solamente una vez y mientras está corriendo, no deben de haber /threads/ en ningún cuarto.
+
+* Especificación del programa
+:PROPERTIES:
+:CUSTOM_ID: especificación-del-programa
+:END:
+1. Si un /thread/ está en el /cuarto/ =i=, entonces ningún thread puede estar en un cuarto =j= si =j!=i=.
+2. El último /thread/ que sale de un /cuarto/, llama el /exit handler/ de dicho /cuarto/. Y ningún /cuarto/ puede estar ocupado mientras el handler está corriendo.
+3. Tu implementación debe de ser justa (/fair/), es decir, cualquier /thread/ que intenta entrar a un /cuarto/, eventualmente tiene éxito. (puedes asumir que todos los /threads/ que entran a algún /cuarto/ eventualmente salen).
+4. Para verificar que tu implementación funciona puedes ejecutar el código de la clase [[file:RoomManagerExample.java][RoomManagerExample]].

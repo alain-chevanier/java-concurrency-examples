@@ -1,0 +1,361 @@
+#+title: Notes on Blocking Synchronization
+#+author: Alaín Chevanier
+#+date: 2025-04-21
+
+* Intro
+Up to this point we have aim to solve synchronization problems where it was ok to wait for other thread or process by spinning in a ~while~, constantly reading variables to decide if a condition is met. However, when we do not know how long we will have to wait, this is not a good solution. We need yield the CPU to other threads or processes while we wait. This is called blocking synchronization.
+
+* Thread-Safe
+An implementation is said to be thread-safe if it can be used safely in a multi-threaded environment. This means that the implementation can be used by multiple threads without causing any data corruption or inconsistencies.
+
+* Producer-Consumer Problem
+The producer-consumer problem is a classic synchronization problem where one or more threads (producers) produce data and place it in a shared buffer, while one or more threads (consumers) consume data from the buffer. The challenge is to ensure that the producers do not overwrite data that has not yet been consumed, and that the consumers do not try to consume data that has not yet been produced.
+
+#+begin_src java
+interface BoundedBuffer<T> {
+    void produce(T item);
+    T consume();
+    int capacity();
+    int elements();
+}
+#+end_src
+
+* Condition Variables
+Condition variables are a synchronization primitive that allows threads to wait for a certain condition to be met. They are used in conjunction with a mutex lock to protect shared data. A condition variable is associated with a mutex lock and allows threads to wait for a signal that indicates that the condition they are waiting for has been met.
+
+* Lost Wakeup Problem
+The lost wakeup problem occurs when a thread that is waiting on a condition variable is never signaled to wake up.
+
+To prevent this problem there are two options. Option 1, it is important not to wait until being signaled to check the condition. Instead, the thread should check the condition from time to time while it is waiting. Option 2, the signaling thread must signal all threads that are waiting on the condition variable, even if only one of them can actually proceed.
+
+#+begin_src java
+// Option 1:
+void myMethod() {
+    lock.lock();
+    try {
+        // wake up until signaled or every 100ms
+        // that means the condition must be checked in a while
+        // as it is not guaranteed to be met once the thread
+        // wakes up
+        while (condition) {
+            condition.await(100);
+        }
+        // .. perform the remaining work
+    } finally {
+        lock.unlock();
+    }
+}
+
+// Option 2:
+void myMethod() {
+    lock.lock();
+    try {
+        // .. perform work
+        condition.signalAll();
+    } finally {
+        lock.unlock();
+    }
+}
+#+end_src
+
+* Spurious Wakeup Problem
+The spurious wakeup problem occurs when a thread that is waiting on a condition variable is signaled to wake up, but the signal is not actually intended for that thread.
+
+To prevent this problem from causing issues, the thread should always check the condition after being signaled.
+
+#+begin_src java
+void myMethod() {
+    lock.lock();
+    try {
+        // check the condition in a while to verify that the condition
+        // is still true after being signaled
+        while (condition) {
+            condition.await();
+        }
+        // .. perform the remaining work
+    } finally {
+        lock.unlock();
+    }
+}
+#+end_src
+
+* Condition Variables Code Example
+Code to solve the bounded buffer (producer-consumer problem) using condition variables.
+
+#+begin_src java
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.Condition;
+
+class BoundedBufferImpl<T> implements BoundedBuffer<T> {
+    int capacity;
+    List<T> buffer;
+    Lock lock;
+    Condition condition;
+
+    BoundedBufferImpl(int capacity) {
+        this.lock = new ReentrantLock();
+        this.condition = lock.newCondition();
+        this.capacity = capacity;
+        this.buffer = new ArrayList<>();
+    }
+
+    void produce(T item) {
+        lock.lock();
+        try {
+            while (buffer.size() == capacity) {
+                condition.await();
+            }
+            buffer.add(item);
+            condition.signalAll();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    T consume() {
+        lock.lock();
+        try {
+            while (buffer.isEmpty()) {
+                condition.await();
+            }
+            T item = buffer.remove(0);
+            condition.signalAll();
+            return item;
+        } finally {
+            lock.unlock();
+        }
+    }
+}
+#+end_src
+
+#+RESULTS:
+
+* Semaphores
+Semaphores are a synchronization primitive that allows threads to signal each other. They are used to control access to a shared resource by multiple threads. A semaphore maintains a count that indicates the number of threads that can access the resource at the same time. When a thread wants to access the resource, it decrements the count. If the count is zero, the thread must wait until another thread signals that it has released the resource.
+
+* Semaphores Code Example
+Code to solve the bounded buffer (producer-consumer problem) using semaphores.
+
+#+begin_src java
+import java.util.concurrent.Semaphore;
+import java.util.Collections;
+
+class BoundedBufferImpl<T> implements BoundedBuffer<T> {
+    int capacity;
+    List<T> buffer;
+    Semaphore empty;
+    Semaphore full;
+
+    BoundedBufferImpl(int capacity) {
+        this.capacity = capacity;
+        // this is a thread-safe list
+        this.buffer = Collections.synchronizedList(new ArrayList<>());
+        this.empty = new Semaphore(capacity);
+        this.full = new Semaphore(0);
+    }
+
+    void produce(T item) {
+        empty.acquire();
+        buffer.add(item);
+        full.release();
+    }
+
+    T consume() {
+        full.acquire();
+        T item = buffer.remove(0);
+        empty.release();
+        return item;
+    }
+}
+#+end_src
+
+* Readers-Writers Problem
+The readers-writers problem is a classic synchronization problem where multiple threads (readers) can read data from a shared resource, but only one thread (writer) can write to the resource at a time. The challenge is to ensure that the readers do not interfere with each other while reading, and that the writer does not interfere with the readers while writing.
+
+#+begin_src java
+interface ReadWriteLock {
+    Lock readLock();
+    Lock writeLock();
+}
+#+end_src
+
+* SimpleReadWriteLock
+
+#+begin_src java
+class SimpleReadWriteLock implements ReadWriteLock {
+    Lock readLock;
+    Lock writeLock;
+    Lock lock;
+    Condition condition;
+    boolean writer;
+    int readers;
+
+    SimpleReadWriteLock() {
+        this.lock = new ReentrantLock();
+        this.condition = lock.newCondition();
+        this.readLock = new ReadLock();
+        this.writeLock = new WriteLock();
+        this.writer = false;
+        this.readers = 0;
+    }
+
+    @Override
+    Lock readLock() {
+        return readLock;
+    }
+
+    @Override
+    Lock writeLock() {
+        return writeLock;
+    }
+
+    class ReadLock implements Lock {
+        void lock() {
+            lock.lock();
+            try {
+                while (writer) {
+                    condition.await();
+                }
+                readers++;
+            } finally {
+                lock.unlock();
+            }
+        }
+
+        void unlock() {
+            lock.lock();
+            try {
+                readers--;
+                if (readers == 0) {
+                    condition.signalAll();
+                }
+            } finally {
+                lock.unlock();
+            }
+        }
+    }
+
+    class WriteLock implements Lock {
+        void lock() {
+            lock.lock();
+            try {
+                while (writer || readers > 0) {
+                    condition.await();
+                }
+                writer = true;
+            } finally {
+                lock.unlock();
+            }
+        }
+
+        void unlock() {
+            lock.lock();
+            try {
+                writer = false;
+                condition.signalAll();
+            } finally {
+                lock.unlock();
+            }
+        }
+    }
+}
+#+end_src
+
+* Problems with the SimpleReadWriteLock
+The SimpleReadWriteLock implementation has a problem where it can lead to starvation of the writer thread. If there are many reader threads, they can keep acquiring the read lock and prevent the writer from acquiring the write lock. This can lead to a situation where the writer thread is never able to acquire the write lock.
+
+* Writers with preference ReadWriteLock
+#+begin_src java
+class FairReadWriteLock implements ReadWriteLock {
+    Lock readLock;
+    Lock writeLock;
+    Lock lock;
+    Condition condition;
+    boolean writer;
+    int readers;
+
+    FairReadWriteLock() {
+        this.lock = new ReentrantLock();
+        this.condition = lock.newCondition();
+        this.readLock = new FairReadLock();
+        this.writeLock = new FairWriteLock();
+        this.writer = false;
+        this.readers = 0;
+    }
+
+    @Override
+    Lock readLock() {
+        return readLock;
+    }
+
+    @Override
+    Lock writeLock() {
+        return writeLock;
+    }
+
+    class FairReadLock implements Lock {
+        void lock() {
+            lock.lock();
+            try {
+                while (writer) {
+                    condition.await();
+                }
+                readers++;
+            } finally {
+                lock.unlock();
+            }
+        }
+
+        void unlock() {
+            lock.lock();
+            try {
+                readers--;
+                if (readers == 0) {
+                    condition.signalAll();
+                }
+            } finally {
+                lock.unlock();
+            }
+        }
+    }
+
+    class FairWriteLock implements Lock {
+        void lock() {
+            lock.lock();
+            try {
+                while (writer) {
+                    condition.await();
+                }
+                writer = true;
+                while (readers > 0) {
+                    condition.await();
+                }
+            } finally {
+                lock.unlock();
+            }
+        }
+
+        void unlock() {
+            lock.lock();
+            try {
+                writer = false;
+                condition.signalAll();
+            } finally {
+                lock.unlock();
+            }
+        }
+    }
+}
+#+end_src
+
+* Problems with the FairReadWriteLock
+This implementation has a problem where it can lead to starvation of the reader threads. If there are many writer threads, they can keep acquiring the write lock and prevent the reader threads from acquiring the read lock. This can lead to a situation where the reader threads are never able to acquire the read lock.
+
+* Problem Variants
+- Completely fair read-write lock. That is writers may have preference but no thread starves.
+- Fair ~RedBlueLock~: There are two groups of threads, red and blue. In the /critical section/, only one group can be active at a time. But no group can starve.
+
+* Ways to achieve fairness
+During this semester we have visited several ways to achieve fairness in concurrent programming. Some of them are:
+- Using a queue to manage the threads that are waiting for a lock (FIFO fairness).
+- Using a ticket lock, where each thread gets a ticket number and the thread with the lowest ticket number gets the lock.
